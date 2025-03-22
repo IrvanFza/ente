@@ -4,6 +4,7 @@ import "dart:math" show Random, max, min;
 
 import "package:computer/computer.dart";
 import "package:flutter/foundation.dart" show kDebugMode;
+import "package:flutter/material.dart";
 import "package:intl/intl.dart";
 import "package:logging/logging.dart";
 import "package:ml_linalg/vector.dart";
@@ -12,7 +13,6 @@ import "package:photos/core/constants.dart";
 import "package:photos/db/memories_db.dart";
 import "package:photos/db/ml/db.dart";
 import "package:photos/extensions/stop_watch.dart";
-import "package:photos/generated/l10n.dart";
 import "package:photos/l10n/l10n.dart";
 import "package:photos/models/base_location.dart";
 import "package:photos/models/file/file.dart";
@@ -30,6 +30,7 @@ import "package:photos/models/ml/face/face_with_embedding.dart";
 import "package:photos/models/ml/face/person.dart";
 import "package:photos/models/ml/vector.dart";
 import "package:photos/service_locator.dart";
+import "package:photos/services/language_service.dart";
 import "package:photos/services/location_service.dart";
 import "package:photos/services/machine_learning/face_ml/person/person_service.dart";
 import "package:photos/services/machine_learning/ml_computer.dart";
@@ -42,6 +43,8 @@ class MemoriesResult {
   final List<BaseLocation> baseLocations;
 
   MemoriesResult(this.memories, this.baseLocations);
+
+  get isEmpty => memories.isEmpty;
 }
 
 class SmartMemoriesService {
@@ -116,7 +119,8 @@ class SmartMemoriesService {
 
       final local = await getLocale();
       final languageCode = local?.languageCode ?? "en";
-      final s = await S.load(local!);
+      final s = await LanguageService.s;
+
       _logger.finest('get locale and S $t');
 
       _logger.finest('all data fetched $t at ${DateTime.now()}, to computer');
@@ -312,6 +316,15 @@ class SmartMemoriesService {
     final seenTimes = await _memoriesDB.getSeenTimes();
     final fillerMemories =
         await _getFillerResults(allFiles, now, seenTimes: seenTimes);
+
+    final local = await getLocale();
+    final languageCode = local?.languageCode ?? "en";
+    final s = await LanguageService.s;
+
+    _logger.finest('get locale and S');
+    for (final memory in fillerMemories) {
+      memory.title = memory.createTitle(s, languageCode);
+    }
     return fillerMemories;
   }
 
@@ -1529,6 +1542,31 @@ class SmartMemoriesService {
       memoryResults.add(fillerMemory);
     }
     return memoryResults;
+  }
+
+  static Future<String> getDateFormattedLocale({
+    required int creationTime,
+  }) async {
+    final locale = await getLocale();
+
+    return getDateFormatted(
+      creationTime: creationTime,
+      languageCode: locale!.languageCode,
+    );
+  }
+
+  static String getDateFormatted({
+    required int creationTime,
+    BuildContext? context,
+    String? languageCode,
+  }) {
+    return DateFormat.yMMMd(
+      context != null
+          ? Localizations.localeOf(context).languageCode
+          : languageCode ?? "en",
+    ).format(
+      DateTime.fromMicrosecondsSinceEpoch(creationTime),
+    );
   }
 
   /// TODO: lau: replace this by just taking next 7 days
