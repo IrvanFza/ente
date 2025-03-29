@@ -5,6 +5,18 @@ description: Fixing docker related errors when trying to self host Ente
 
 # Docker
 
+## configs
+
+Remember to restart your cluster to ensure changes that you make in the
+`configs` section in `compose.yaml` get picked up.
+
+```sh
+docker compose down
+docker compose up
+```
+
+## post_start
+
 The `server/compose.yaml` Docker compose file uses the "post_start" lifecycle
 hook to provision the MinIO instance.
 
@@ -20,7 +32,6 @@ The easiest way to resolve this is to upgrade your Docker compose.
 If you cannot update your Docker compose version, then alternatively you can
 perform the same configuration by removing the "post_start" hook, and adding a
 new service definition:
-
 
 ```yaml
   minio-provision:
@@ -48,3 +59,14 @@ new service definition:
       mc mb -p scw-eu-fr-v3
       '
 ```
+
+## start_interval
+
+Similar to the `post_start` case above, if you are seeing an error like
+
+```
+services.postgres.healthcheck Additional property start_interval is not allowed
+```
+
+You will need to upgrade your Docker compose version to a newer version that
+supports the `start_interval` property on the health check.

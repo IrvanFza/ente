@@ -11,6 +11,7 @@ import "package:photos/services/machine_learning/face_ml/person/person_service.d
 import "package:photos/services/machine_learning/ml_indexing_isolate.dart";
 import 'package:photos/services/machine_learning/ml_service.dart';
 import "package:photos/services/machine_learning/semantic_search/semantic_search_service.dart";
+import "package:photos/services/memory_home_widget_service.dart";
 import 'package:photos/theme/ente_theme.dart';
 import 'package:photos/ui/components/captioned_text_widget.dart';
 import 'package:photos/ui/components/expandable_menu_item_widget.dart';
@@ -317,6 +318,28 @@ class _MLDebugSectionWidgetState extends State<MLDebugSectionWidget> {
               await showGenericErrorDialog(context: context, error: e);
             }
           },
+        ),
+        sectionOptionSpacing,
+        MenuItemWidget(
+          captionedTextWidget: const CaptionedTextWidget(
+            title: "Force memory widget data refresh",
+          ),
+          pressedColor: getEnteColorScheme(context).fillFaint,
+          trailingIcon: Icons.chevron_right_outlined,
+          trailingIconIsMuted: true,
+          onTap: () async =>
+              await MemoryHomeWidgetService.instance.initMemoryHW(true),
+        ),
+        sectionOptionSpacing,
+        MenuItemWidget(
+          captionedTextWidget: const CaptionedTextWidget(
+            title: "Change memory widget picture",
+          ),
+          pressedColor: getEnteColorScheme(context).fillFaint,
+          trailingIcon: Icons.chevron_right_outlined,
+          trailingIconIsMuted: true,
+          onTap: () async =>
+              await MemoryHomeWidgetService.instance.initMemoryHW(false),
         ),
         sectionOptionSpacing,
         MenuItemWidget(
