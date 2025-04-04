@@ -1,32 +1,3 @@
-import { isDesktop } from "@/base/app";
-import { SpacedRow } from "@/base/components/containers";
-import { InlineErrorIndicator } from "@/base/components/ErrorIndicator";
-import { TitledMiniDialog } from "@/base/components/MiniDialog";
-import { DialogCloseIconButton } from "@/base/components/mui/DialogCloseIconButton";
-import { FocusVisibleButton } from "@/base/components/mui/FocusVisibleButton";
-import { LoadingButton } from "@/base/components/mui/LoadingButton";
-import { useIsSmallWidth } from "@/base/components/utils/hooks";
-import { type ModalVisibilityProps } from "@/base/components/utils/modal";
-import { useBaseContext } from "@/base/context";
-import { isDevBuild } from "@/base/env";
-import { lowercaseExtension } from "@/base/file-name";
-import { formattedListJoin, ut } from "@/base/i18n";
-import type { LocalUser } from "@/base/local-user";
-import log from "@/base/log";
-import {
-    FileInfo,
-    type FileInfoExif,
-    type FileInfoProps,
-} from "@/gallery/components/FileInfo";
-import type { Collection } from "@/media/collection";
-import { fileVisibility, ItemVisibility } from "@/media/file-metadata";
-import { FileType } from "@/media/file-type";
-import type { EnteFile } from "@/media/file.js";
-import { isHEICExtension, needsJPEGConversion } from "@/media/formats";
-import {
-    ImageEditorOverlay,
-    type ImageEditorOverlayProps,
-} from "@/new/photos/components/ImageEditorOverlay";
 import ArchiveOutlinedIcon from "@mui/icons-material/ArchiveOutlined";
 import ContentCopyIcon from "@mui/icons-material/ContentCopy";
 import DeleteIcon from "@mui/icons-material/Delete";
@@ -46,6 +17,34 @@ import {
     Typography,
     type ModalProps,
 } from "@mui/material";
+import { isDesktop } from "ente-base/app";
+import { SpacedRow } from "ente-base/components/containers";
+import { InlineErrorIndicator } from "ente-base/components/ErrorIndicator";
+import { TitledMiniDialog } from "ente-base/components/MiniDialog";
+import { DialogCloseIconButton } from "ente-base/components/mui/DialogCloseIconButton";
+import { FocusVisibleButton } from "ente-base/components/mui/FocusVisibleButton";
+import { LoadingButton } from "ente-base/components/mui/LoadingButton";
+import { useIsSmallWidth } from "ente-base/components/utils/hooks";
+import { type ModalVisibilityProps } from "ente-base/components/utils/modal";
+import { useBaseContext } from "ente-base/context";
+import { lowercaseExtension } from "ente-base/file-name";
+import { formattedListJoin, ut } from "ente-base/i18n";
+import type { LocalUser } from "ente-base/local-user";
+import log from "ente-base/log";
+import {
+    FileInfo,
+    type FileInfoExif,
+    type FileInfoProps,
+} from "ente-gallery/components/FileInfo";
+import type { Collection } from "ente-media/collection";
+import { fileVisibility, ItemVisibility } from "ente-media/file-metadata";
+import { FileType } from "ente-media/file-type";
+import type { EnteFile } from "ente-media/file.js";
+import { isHEICExtension, needsJPEGConversion } from "ente-media/formats";
+import {
+    ImageEditorOverlay,
+    type ImageEditorOverlayProps,
+} from "ente-new/photos/components/ImageEditorOverlay";
 import { t } from "i18next";
 import React, {
     useCallback,
@@ -54,7 +53,6 @@ import React, {
     useRef,
     useState,
 } from "react";
-import { hlsPlaylistForFile } from "../../services/video";
 import {
     fileInfoExifForFile,
     updateItemDataAlt,
@@ -520,15 +518,6 @@ export const FileViewer: React.FC<FileViewerProps> = ({
                 }
             })();
 
-            if (
-                isDevBuild &&
-                process.env.NEXT_PUBLIC_ENTE_WIP_VIDEO_STREAMING
-            ) {
-                if (file.metadata.fileType == FileType.video) {
-                    void hlsPlaylistForFile(file);
-                }
-            }
-
             const annotation: FileViewerFileAnnotation = {
                 fileID,
                 isOwnFile,
@@ -827,8 +816,10 @@ export const FileViewer: React.FC<FileViewerProps> = ({
     }, [handleClose, files]);
 
     useEffect(() => {
-        psRef.current?.refreshCurrentSlideFavoriteButtonIfNeeded();
-    }, [favoriteFileIDs, pendingFavoriteUpdates]);
+        if (open) {
+            psRef.current?.refreshCurrentSlideFavoriteButtonIfNeeded();
+        }
+    }, [favoriteFileIDs, pendingFavoriteUpdates, open]);
 
     useEffect(() => {
         if (open) {
@@ -840,7 +831,9 @@ export const FileViewer: React.FC<FileViewerProps> = ({
                 disableDownload,
                 haveUser,
                 delegate: delegateRef.current!,
-                onClose: handleClose,
+                onClose: () => {
+                    if (psRef.current) handleClose();
+                },
                 onAnnotate: handleAnnotate,
                 onViewInfo: handleViewInfo,
                 onDownload: handleDownloadBarAction,

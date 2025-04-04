@@ -38,6 +38,7 @@ import 'package:photos/services/account/user_service.dart';
 import 'package:photos/services/app_lifecycle_service.dart';
 import 'package:photos/services/collections_service.dart';
 import "package:photos/services/machine_learning/face_ml/person/person_service.dart";
+import "package:photos/services/memory_home_widget_service.dart";
 import "package:photos/services/notification_service.dart";
 import "package:photos/services/sync/diff_fetcher.dart";
 import 'package:photos/services/sync/local_sync_service.dart';
@@ -122,6 +123,10 @@ class _HomeWidgetState extends State<HomeWidget> {
   void initState() {
     _logger.info("Building initstate");
     super.initState();
+
+    if (LocalSyncService.instance.hasCompletedFirstImport()) {
+      MemoryHomeWidgetService.instance.checkPendingMemorySync();
+    }
     _tabChangedEventSubscription =
         Bus.instance.on<TabChangedEvent>().listen((event) {
       _selectedTabIndex = event.selectedIndex;
@@ -181,13 +186,11 @@ class _HomeWidgetState extends State<HomeWidget> {
         }
         Future.delayed(
           delayInRefresh,
-          () => {
-            if (mounted)
-              {
-                setState(
-                  () {},
-                ),
-              },
+          () {
+            if (mounted) {
+              setState(() {});
+              MemoryHomeWidgetService.instance.checkPendingMemorySync();
+            }
           },
         );
       }
