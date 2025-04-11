@@ -305,12 +305,22 @@ class MagicCacheService {
       _logger.info("No magic cache found");
       return [];
     }
-    final jsonString = file.readAsStringSync();
-    return MagicCache.decodeJsonToList(jsonString);
+    try {
+      final bytes = await file.readAsBytes();
+      final jsonString = String.fromCharCodes(bytes);
+      return MagicCache.decodeJsonToList(jsonString);
+    } catch (e, s) {
+      _logger.severe("Error reading or decoding cache file", e, s);
+      await file.delete();
+      rethrow;
+    }
   }
 
   Future<void> clearMagicCache() async {
-    await File(await _getCachePath()).delete();
+    final file = File(await _getCachePath());
+    if (file.existsSync()) {
+      await file.delete();
+    }
   }
 
   Future<List<GenericSearchResult>> getMagicGenericSearchResult(

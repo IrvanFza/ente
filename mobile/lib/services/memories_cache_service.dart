@@ -10,6 +10,7 @@ import "package:photos/db/memories_db.dart";
 import "package:photos/events/files_updated_event.dart";
 import "package:photos/events/memories_changed_event.dart";
 import "package:photos/events/memories_setting_changed.dart";
+import "package:photos/events/memory_seen_event.dart";
 import "package:photos/extensions/stop_watch.dart";
 import "package:photos/models/file/file.dart";
 import "package:photos/models/memories/memories_cache.dart";
@@ -87,7 +88,8 @@ class MemoriesCacheService {
     Bus.instance.fire(MemoriesSettingChanged());
   }
 
-  bool get enableSmartMemories => flagService.hasGrantedMLConsent;
+  bool get enableSmartMemories =>
+      flagService.hasGrantedMLConsent && localSettings.isMLLocalIndexingEnabled;
 
   void _checkIfTimeToUpdateCache() {
     if (!enableSmartMemories) {
@@ -127,7 +129,7 @@ class MemoriesCacheService {
         }
       }
     }
-    if (lastInList) Bus.instance.fire(MemoriesChangedEvent());
+    if (lastInList) Bus.instance.fire(MemorySeenEvent());
   }
 
   void queueUpdateCache() {
@@ -135,9 +137,10 @@ class MemoriesCacheService {
     unawaited(_prefs.setBool(_shouldUpdateCacheKey, true));
   }
 
-  void _cacheUpdated() {
+  Future<void> _cacheUpdated() async {
     _shouldUpdate = false;
     unawaited(_prefs.setBool(_shouldUpdateCacheKey, false));
+    await _resetLastMemoriesCacheUpdateTime();
     Bus.instance.fire(MemoriesChangedEvent());
   }
 
@@ -179,6 +182,14 @@ class MemoriesCacheService {
       final now = DateTime.now();
       final next = now.add(kMemoriesUpdateFrequency);
       final nowResult = await smartMemoriesService.calcMemories(now, newCache);
+      if (nowResult.isEmpty) {
+        _cachedMemories = [];
+        _isUpdateInProgress = false;
+        _logger.warning(
+          "No memories found for now, not updating cache and returning early",
+        );
+        return;
+      }
       final nextResult =
           await smartMemoriesService.calcMemories(next, newCache);
       w?.log("calculated new memories");
@@ -203,9 +214,8 @@ class MemoriesCacheService {
         MemoriesCache.encodeToJsonString(newCache).codeUnits,
       );
       w?.log("cacheWritten");
-      await _resetLastMemoriesCacheUpdateTime();
-      w?.logAndReset('done');
-      _cacheUpdated();
+      await _cacheUpdated();
+      w?.logAndReset('_cacheUpdated method done');
     } catch (e, s) {
       _logger.info("Error updating memories cache", e, s);
     } finally {
@@ -325,38 +335,44 @@ class MemoriesCacheService {
   }
 
   Future<void> _calculateRegularFillers() async {
-    _cachedMemories = await smartMemoriesService.calcFillerResults();
-    Bus.instance.fire(MemoriesChangedEvent());
+    if (_cachedMemories == null) {
+      _cachedMemories = await smartMemoriesService.calcFillerResults();
+      Bus.instance.fire(MemoriesChangedEvent());
+    }
     return;
   }
 
   Future<List<SmartMemory>> getMemories() async {
     if (!showAnyMemories) {
+      _logger.info('Showing memories is disabled in settings, showing none');
       return [];
     }
-    if (_cachedMemories != null) {
+    if (_cachedMemories != null && _cachedMemories!.isNotEmpty) {
       return _cachedMemories!;
     }
     try {
-    if (!enableSmartMemories) {
-      await _calculateRegularFillers();
-      return _cachedMemories!;
-    }
-    _cachedMemories = await _getMemoriesFromCache();
-    if (_cachedMemories == null || _cachedMemories!.isEmpty) {
-      await updateCache(forced: true);
+      if (!enableSmartMemories) {
+        await _calculateRegularFillers();
+        return _cachedMemories!;
+      }
       _cachedMemories = await _getMemoriesFromCache();
-    }
-    if (_cachedMemories == null ||
-        (_cachedMemories != null && _cachedMemories!.isEmpty)) {
-      _logger.severe("No memories found in (computed) cache, getting fillers");
-      await _calculateRegularFillers();
-    }
-    return _cachedMemories!;
+      if (_cachedMemories == null || _cachedMemories!.isEmpty) {
+        await updateCache(forced: true);
+      }
+      if (_cachedMemories == null || _cachedMemories!.isEmpty) {
+        _logger
+            .severe("No memories found in (computed) cache, getting fillers");
+        await _calculateRegularFillers();
+      }
+      return _cachedMemories!;
     } catch (e, s) {
       _logger.severe("Error in getMemories", e, s);
       return [];
     }
+  }
+
+  Future<List<SmartMemory>?> getCachedMemories() async {
+    return _cachedMemories;
   }
 
   Future<void> goToMemoryFromGeneratedFileID(
@@ -381,6 +397,9 @@ class MemoriesCacheService {
       fileIdx = 0;
     }
     if (!found) {
+      _logger.warning(
+        "Could not find memory with generatedFileID: $generatedFileID",
+      );
       return;
     }
     await routeToPage(
@@ -410,12 +429,25 @@ class MemoriesCacheService {
         allFileIdsToFile[file.uploadedFileID!] = file;
       }
     }
-    final jsonString = file.readAsStringSync();
-    return MemoriesCache.decodeFromJsonString(jsonString, allFileIdsToFile);
+    try {
+      final bytes = await file.readAsBytes();
+      final jsonString = String.fromCharCodes(bytes);
+      final cache =
+          MemoriesCache.decodeFromJsonString(jsonString, allFileIdsToFile);
+      _logger.info("Reading memories cache result from disk done");
+      return cache;
+    } catch (e, s) {
+      _logger.severe("Error reading or decoding cache file", e, s);
+      await file.delete();
+      return null;
+    }
   }
 
   Future<void> clearMemoriesCache() async {
-    await File(await _getCachePath()).delete();
+    final file = File(await _getCachePath());
+    if (file.existsSync()) {
+      await file.delete();
+    }
     _cachedMemories = null;
   }
 }
