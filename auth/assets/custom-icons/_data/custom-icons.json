@@ -133,6 +133,10 @@
       ]
     },
     {
+      "title": "Bitkub",
+      "slug": "bitkub"
+    },
+    {
       "title": "Bitfinex"
     },
     {
@@ -184,6 +188,9 @@
       "slug": "blue_sky"
     },
     {
+      "title": "bonify"
+    },
+    {
       "title": "Booking",
       "altNames": [
         "Booking.com"
@@ -207,6 +214,13 @@
     },
     {
       "title": "Bugzilla"
+    },
+    {
+      "title": "Bundesagentur für Arbeit",
+      "slug": "bundesagentur_fur_arbeit",
+      "altNames": [
+        "Agentur für Arbeit"
+      ]
     },
     {
       "title": "ButterflyMX",
@@ -386,6 +400,13 @@
       "hex": "858585"
     },
     {
+      "title": "Fanatical",
+      "slug": "fanatical",
+      "altNames": [
+        "FANATICAL"
+      ]
+    },
+    {
       "title": "Fastmail"
     },
     {
@@ -413,6 +434,9 @@
     {
       "title": "Firefox",
       "slug": "mozilla"
+    },
+    {
+      "title": "fortrabbit"
     },
     {
       "title": "ForUsAll"
@@ -508,11 +532,18 @@
       "slug": "id_me"
     },
     {
-      "title": "Infomaniak"
+      "title": "ImmoScout24",
+      "slug": "immo_scout_24",
+      "altNames": [
+        "ImmobilienScout24"
+      ]
     },
     {
       "title": "Impact.com",
       "slug": "impact"
+    },
+    {
+      "title": "Infomaniak"
     },
     {
       "title": "ING"
@@ -615,8 +646,7 @@
     },
     {
       "title": "LinkedIn",
-      "slug": "linkedin",
-      "hex": "2596be"
+      "slug": "linkedin"
     },
     {
       "title": "Linux.Do",
