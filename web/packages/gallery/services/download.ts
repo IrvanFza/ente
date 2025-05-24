@@ -106,7 +106,7 @@ class DownloadManager {
      * Credentials that should be used to download files when we're in the
      * context of the public albums app.
      */
-    private publicAlbumsCredentials: PublicAlbumsCredentials | undefined;
+    publicAlbumsCredentials: PublicAlbumsCredentials | undefined;
     /**
      * Local cache for thumbnail blobs.
      *
@@ -630,16 +630,16 @@ const createRenderableSourceURLs = async (
 
             const videoURL = () =>
                 playableVideoURL(
+                    file,
                     livePhoto.videoFileName,
                     new Blob([livePhoto.videoData]),
-                    { fileType },
                 );
 
             return { type: "livePhoto", imageURL, originalImageBlob, videoURL };
         }
 
         case FileType.video: {
-            const videoURL = await playableVideoURL(fileName, fileBlob);
+            const videoURL = await playableVideoURL(file, fileName, fileBlob);
             return { type: "video", videoURL };
         }
 
@@ -711,7 +711,7 @@ const photos_downloadFile = async (file: EnteFile): Promise<Response> => {
     //    credentials in the "X-Auth-Token".
     //
     // 2. The proxy then does both the original steps: (a). Use the credentials
-    //    to get the pre signed URL, and (b) fetch that pre signed URL and
+    //    to get the pre-signed URL, and (b) fetch that pre-signed URL and
     //    stream back the response.
 
     const getFile = async () => {
