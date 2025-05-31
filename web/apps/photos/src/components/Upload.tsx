@@ -2,7 +2,6 @@ import ChevronRightIcon from "@mui/icons-material/ChevronRight";
 import DiscFullIcon from "@mui/icons-material/DiscFull";
 import GoogleIcon from "@mui/icons-material/Google";
 import ImageOutlinedIcon from "@mui/icons-material/ImageOutlined";
-import InfoRoundedIcon from "@mui/icons-material/InfoRounded";
 import PermMediaOutlinedIcon from "@mui/icons-material/PermMediaOutlined";
 import {
     Box,
@@ -19,21 +18,27 @@ import { SpacedRow } from "ente-base/components/containers";
 import { DialogCloseIconButton } from "ente-base/components/mui/DialogCloseIconButton";
 import { FocusVisibleButton } from "ente-base/components/mui/FocusVisibleButton";
 import { RowButton } from "ente-base/components/RowButton";
+import { SingleInputDialog } from "ente-base/components/SingleInputDialog";
 import { useIsTouchscreen } from "ente-base/components/utils/hooks";
 import {
     useModalVisibility,
     type ModalVisibilityProps,
 } from "ente-base/components/utils/modal";
 import { useBaseContext } from "ente-base/context";
-import { basename } from "ente-base/file-name";
+import { basename, dirname, joinPath } from "ente-base/file-name";
 import log from "ente-base/log";
 import type { CollectionMapping, Electron, ZipItem } from "ente-base/types/ipc";
+import { type UploadTypeSelectorIntent } from "ente-gallery/components/Upload";
 import { useFileInput } from "ente-gallery/components/utils/use-file-input";
-import type {
-    FileAndPath,
-    UploadItem,
-    UploadPhase,
+import {
+    groupItemsBasedOnParentFolder,
+    uploadPathPrefix,
+    type FileAndPath,
+    type UploadItem,
+    type UploadItemAndPath,
+    type UploadPhase,
 } from "ente-gallery/services/upload";
+import type { ParsedMetadataJSON } from "ente-gallery/services/upload/metadata-json";
 import type { Collection } from "ente-media/collection";
 import type { EnteFile } from "ente-media/file";
 import { UploaderNameInput } from "ente-new/albums/components/UploaderNameInput";
@@ -41,7 +46,6 @@ import { CollectionMappingChoice } from "ente-new/photos/components/CollectionMa
 import type { CollectionSelectorAttributes } from "ente-new/photos/components/CollectionSelector";
 import { downloadAppDialogAttributes } from "ente-new/photos/components/utils/download";
 import { getLatestCollections } from "ente-new/photos/services/collections";
-import { exportMetadataDirectoryName } from "ente-new/photos/services/export";
 import { redirectToCustomerPortal } from "ente-new/photos/services/user-details";
 import { usePhotosAppContext } from "ente-new/photos/types/context";
 import { CustomError } from "ente-shared/error";
@@ -55,7 +59,6 @@ import React, {
     useRef,
     useState,
 } from "react";
-import { Trans } from "react-i18next";
 import {
     getPublicCollectionUID,
     getPublicCollectionUploaderName,
@@ -67,16 +70,13 @@ import type {
     UploadCounter,
     UploadFileNames,
     UploadItemWithCollection,
-} from "services/upload/uploadManager";
-import uploadManager from "services/upload/uploadManager";
+} from "services/upload-manager";
+import { uploadManager } from "services/upload-manager";
 import watcher from "services/watch";
 import { SetLoading } from "types/gallery";
 import { getOrCreateAlbum } from "utils/collection";
 import { PublicCollectionGalleryContext } from "utils/publicCollectionGallery";
-import { SetCollectionNamerAttributes } from "./Collections/CollectionNamer";
 import { UploadProgress } from "./UploadProgress";
-
-export type UploadTypeSelectorIntent = "upload" | "import" | "collect";
 
 interface UploadProps {
     syncWithRemote: (force?: boolean, silent?: boolean) => Promise<void>;
@@ -91,7 +91,6 @@ interface UploadProps {
      * Close the collection selector if it is open.
      */
     onCloseCollectionSelector?: () => void;
-    setCollectionNamerAttributes?: SetCollectionNamerAttributes;
     setLoading: SetLoading;
     setShouldDisableDropzone: (value: boolean) => void;
     showCollectionSelector?: () => void;
@@ -152,12 +151,17 @@ export const Upload: React.FC<UploadProps> = ({
         useState<SegregatedFinishedUploads>(new Map());
     const [percentComplete, setPercentComplete] = useState(0);
     const [hasLivePhotos, setHasLivePhotos] = useState(false);
+    const [prefilledNewAlbumName, setPrefilledNewAlbumName] = useState("");
 
     const [openCollectionMappingChoice, setOpenCollectionMappingChoice] =
         useState(false);
     const [importSuggestion, setImportSuggestion] = useState<ImportSuggestion>(
         defaultImportSuggestion,
     );
+    const {
+        show: showNewAlbumNameInput,
+        props: newAlbumNameInputVisibilityProps,
+    } = useModalVisibility();
     const {
         show: showUploaderNameInput,
         props: uploaderNameInputVisibilityProps,
@@ -212,7 +216,7 @@ export const Upload: React.FC<UploadProps> = ({
      *
      * See the documentation of {@link UploadItem} for more details.
      */
-    const uploadItemsAndPaths = useRef<[UploadItem, string][]>([]);
+    const uploadItemsAndPaths = useRef<UploadItemAndPath[]>([]);
 
     /**
      * If true, then the next upload we'll be processing was initiated by our
@@ -414,6 +418,8 @@ export const Upload: React.FC<UploadProps> = ({
         //
         // - All the paths use POSIX separators. See inline comments.
         //
+        // - For zips we concatenate the path of the zip to the path within the
+        //   zip for the purpose of computing the nesting.
         const allItemAndPaths = [
             // Relative path (using POSIX separators) or the file's name.
             webFiles.map((f) => [f, pathLikeForWebFile(f)]),
@@ -422,12 +428,17 @@ export const Upload: React.FC<UploadProps> = ({
             // which return POSIX paths.
             desktopFiles.map((fp) => [fp, fp.path]),
             desktopFilePaths.map((p) => [p, p]),
-            // The first path, that of the zip file itself, is POSIX like the
-            // other paths we get over the IPC boundary. And the second path,
-            // ze[1], the entry name, uses POSIX separators because that is what
-            // the ZIP format uses.
-            desktopZipItems.map((ze) => [ze, ze[1]]),
-        ].flat() as [UploadItem, string][];
+            // Concatenate the path of the item within the zip to path of the
+            // zip. This won't affect the upload: this path is only used for
+            // computation of the "parent" folder, and this concatenation best
+            // reflects the nesting.
+            //
+            // Re POSIXness: The first path, that of the zip file itself, is
+            // POSIX like the other paths we get over the IPC boundary. And the
+            // second path, ze[1], the entry name, uses POSIX separators because
+            // that is what the ZIP format uses.
+            desktopZipItems.map((ze) => [ze, joinPath(dirname(ze[0]), ze[1])]),
+        ].flat() as UploadItemAndPath[];
 
         if (allItemAndPaths.length == 0) return;
 
@@ -454,8 +465,7 @@ export const Upload: React.FC<UploadProps> = ({
 
         // Remove hidden files (files whose names begins with a ".").
         const prunedItemAndPaths = allItemAndPaths.filter(
-            // eslint-disable-next-line @typescript-eslint/no-unused-vars
-            ([_, p]) => !basename(p).startsWith("."),
+            ([, p]) => !basename(p).startsWith("."),
         );
 
         uploadItemsAndPaths.current = prunedItemAndPaths;
@@ -464,10 +474,9 @@ export const Upload: React.FC<UploadProps> = ({
             return;
         }
 
-        const importSuggestion = getImportSuggestion(
+        const importSuggestion = deriveImportSuggestion(
             selectedUploadType.current,
-            // eslint-disable-next-line @typescript-eslint/no-unused-vars
-            prunedItemAndPaths.map(([_, p]) => p),
+            prunedItemAndPaths.map(([, p]) => p),
         );
         setImportSuggestion(importSuggestion);
 
@@ -530,8 +539,10 @@ export const Upload: React.FC<UploadProps> = ({
             if (importSuggestion.hasNestedFolders) {
                 showNextModal = () => setOpenCollectionMappingChoice(true);
             } else {
-                showNextModal = () =>
-                    showCollectionCreateModal(importSuggestion.rootFolderName);
+                showNextModal = () => {
+                    setPrefilledNewAlbumName(importSuggestion.rootFolderName);
+                    showNewAlbumNameInput();
+                };
             }
 
             props.onOpenCollectionSelector({
@@ -545,7 +556,7 @@ export const Upload: React.FC<UploadProps> = ({
 
     const preCollectionCreationAction = async () => {
         props.onCloseCollectionSelector?.();
-        props.setShouldDisableDropzone(!uploadManager.shouldAllowNewUpload());
+        props.setShouldDisableDropzone(uploadManager.isUploadInProgress());
         setUploadPhase("preparing");
         setUploadProgressView(true);
     };
@@ -556,8 +567,9 @@ export const Upload: React.FC<UploadProps> = ({
     ) => {
         await preCollectionCreationAction();
         const uploadItemsWithCollection = uploadItemsAndPaths.current.map(
-            ([uploadItem], index) => ({
+            ([uploadItem, path], index) => ({
                 uploadItem,
+                pathPrefix: uploadPathPrefix(path),
                 localID: index,
                 collectionID: collection.id,
             }),
@@ -577,15 +589,19 @@ export const Upload: React.FC<UploadProps> = ({
         await preCollectionCreationAction();
         let uploadItemsWithCollection: UploadItemWithCollection[] = [];
         const collections: Collection[] = [];
-        let collectionNameToUploadItems = new Map<string, UploadItem[]>();
+        let collectionNameToUploadItems = new Map<
+            string,
+            UploadItemAndPath[]
+        >();
         if (mapping == "root") {
             collectionNameToUploadItems.set(
                 collectionName,
-                uploadItemsAndPaths.current.map(([i]) => i),
+                uploadItemsAndPaths.current,
             );
         } else {
-            collectionNameToUploadItems = groupFilesBasedOnParentFolder(
+            collectionNameToUploadItems = groupItemsBasedOnParentFolder(
                 uploadItemsAndPaths.current,
+                collectionName,
             );
         }
         try {
@@ -603,8 +619,9 @@ export const Upload: React.FC<UploadProps> = ({
                 props.setCollections([...existingCollections, ...collections]);
                 uploadItemsWithCollection = [
                     ...uploadItemsWithCollection,
-                    ...uploadItems.map((uploadItem) => ({
+                    ...uploadItems.map(([uploadItem, path]) => ({
                         localID: index++,
+                        pathPrefix: uploadPathPrefix(path),
                         collectionID: collection.id,
                         uploadItem,
                     })),
@@ -636,8 +653,10 @@ export const Upload: React.FC<UploadProps> = ({
         await currentUploadPromise.current;
     };
 
-    const preUploadAction = async () => {
-        uploadManager.prepareForNewUpload();
+    const preUploadAction = async (
+        parsedMetadataJSONMap?: Map<string, ParsedMetadataJSON>,
+    ) => {
+        uploadManager.prepareForNewUpload(parsedMetadataJSONMap);
         setUploadProgressView(true);
         await props.syncWithRemote(true, true);
     };
@@ -698,10 +717,10 @@ export const Upload: React.FC<UploadProps> = ({
     const retryFailed = async () => {
         try {
             log.info("Retrying failed uploads");
-            const { items, collections } =
-                uploadManager.getFailedItemsWithCollections();
+            const { items, collections, parsedMetadataJSONMap } =
+                uploadManager.failedItemState();
             const uploaderName = uploadManager.getUploaderName();
-            await preUploadAction();
+            await preUploadAction(parsedMetadataJSONMap);
             await uploadManager.uploadItems(items, collections, uploaderName);
         } catch (e) {
             log.error("Retrying failed uploads failed", e);
@@ -746,15 +765,6 @@ export const Upload: React.FC<UploadProps> = ({
 
     const uploadToSingleNewCollection = (collectionName: string) => {
         uploadFilesToNewCollections("root", collectionName);
-    };
-
-    const showCollectionCreateModal = (suggestedName: string) => {
-        props.setCollectionNamerAttributes({
-            title: t("new_album"),
-            buttonText: t("create"),
-            autoFilledName: suggestedName,
-            callback: uploadToSingleNewCollection,
-        });
     };
 
     const cancelUploads = () => {
@@ -803,44 +813,12 @@ export const Upload: React.FC<UploadProps> = ({
         }
     };
 
-    const handleCollectionMappingSelect = (mapping: CollectionMapping) => {
-        switch (mapping) {
-            case "root":
-                uploadToSingleNewCollection(
-                    // rootFolderName would be empty here if one edge case:
-                    // - User drags and drops a mixture of files and folders
-                    // - They select the "upload to multiple albums" option
-                    // - The see the error, close the error
-                    // - Then they select the "upload to single album" option
-                    //
-                    // In such a flow, we'll reach here with an empty
-                    // rootFolderName. The proper fix for this would be
-                    // rearrange the flow and ask them to name the album here,
-                    // but we currently don't have support for chaining modals.
-                    // So in the meanwhile, keep a fallback album name at hand.
-                    importSuggestion.rootFolderName ??
-                        t("autogenerated_default_album_name"),
-                );
-                break;
-            case "parent":
-                if (importSuggestion.hasRootLevelFileWithFolder) {
-                    showMiniDialog({
-                        icon: <InfoRoundedIcon />,
-                        title: t("root_level_file_with_folder_not_allowed"),
-                        message: (
-                            <Trans
-                                i18nKey={
-                                    "root_level_file_with_folder_not_allowed_message"
-                                }
-                            />
-                        ),
-                        cancel: t("ok"),
-                    });
-                } else {
-                    uploadFilesToNewCollections("parent");
-                }
-        }
-    };
+    const handleCollectionMappingSelect = (mapping: CollectionMapping) =>
+        uploadFilesToNewCollections(
+            mapping,
+            importSuggestion.rootFolderName ??
+                t("autogenerated_default_album_name"),
+        );
 
     return (
         <>
@@ -877,6 +855,16 @@ export const Upload: React.FC<UploadProps> = ({
                 retryFailed={retryFailed}
                 finishedUploads={finishedUploads}
                 cancelUploads={cancelUploads}
+            />
+            <SingleInputDialog
+                {...newAlbumNameInputVisibilityProps}
+                title={t("new_album")}
+                label={t("album_name")}
+                autoFocus
+                initialValue={prefilledNewAlbumName}
+                submitButtonColor="accent"
+                submitButtonTitle={t("create")}
+                onSubmit={uploadToSingleNewCollection}
             />
             <UploaderNameInput
                 open={uploaderNameInputVisibilityProps.open}
@@ -966,19 +954,17 @@ const pathLikeForWebFile = (file: File): string =>
 interface ImportSuggestion {
     rootFolderName: string;
     hasNestedFolders: boolean;
-    hasRootLevelFileWithFolder: boolean;
 }
 
 const defaultImportSuggestion: ImportSuggestion = {
     rootFolderName: "",
     hasNestedFolders: false,
-    hasRootLevelFileWithFolder: false,
 };
 
-function getImportSuggestion(
+const deriveImportSuggestion = (
     uploadType: UploadType,
     paths: string[],
-): ImportSuggestion {
+): ImportSuggestion => {
     if (isDesktop && uploadType == "files") {
         return defaultImportSuggestion;
     }
@@ -1014,44 +1000,7 @@ function getImportSuggestion(
     return {
         rootFolderName: commonPathPrefix || null,
         hasNestedFolders: firstFileFolder !== lastFileFolder,
-        hasRootLevelFileWithFolder: firstFileFolder === "",
     };
-}
-
-// This function groups files that are that have the same parent folder into collections
-// For Example, for user files have a directory structure like this
-//              a
-//            / |  \
-//           b  j   c
-//          /|\    /  \
-//         e f g   h  i
-//
-// The files will grouped into 3 collections.
-// [a => [j],
-// b => [e,f,g],
-// c => [h, i]]
-const groupFilesBasedOnParentFolder = (
-    uploadItemsAndPaths: [UploadItem, string][],
-) => {
-    const result = new Map<string, UploadItem[]>();
-    for (const [uploadItem, pathOrName] of uploadItemsAndPaths) {
-        let folderPath = pathOrName.substring(0, pathOrName.lastIndexOf("/"));
-        // If the parent folder of a file is "metadata"
-        // we consider it to be part of the parent folder
-        // For Eg,For FileList  -> [a/x.png, a/metadata/x.png.json]
-        // they will both we grouped into the collection "a"
-        // This is cluster the metadata json files in the same collection as the file it is for
-        if (folderPath.endsWith(exportMetadataDirectoryName)) {
-            folderPath = folderPath.substring(0, folderPath.lastIndexOf("/"));
-        }
-        const folderName = folderPath.substring(
-            folderPath.lastIndexOf("/") + 1,
-        );
-        if (!folderName) throw Error("Unexpected empty folder name");
-        if (!result.has(folderName)) result.set(folderName, []);
-        result.get(folderName).push(uploadItem);
-    }
-    return result;
 };
 
 const setPendingUploads = async (

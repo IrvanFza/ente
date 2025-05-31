@@ -66,8 +66,6 @@ class MessageLookup extends MessageLookupByLibrary {
             MessageLookupByLibrary.simpleMessage("Loo uus konto"),
         "creatingLink":
             MessageLookupByLibrary.simpleMessage("Lingi loomine..."),
-        "curatedMemories":
-            MessageLookupByLibrary.simpleMessage("Curated memories"),
         "custom": MessageLookupByLibrary.simpleMessage("Kohandatud"),
         "darkTheme": MessageLookupByLibrary.simpleMessage("Tume"),
         "dayToday": MessageLookupByLibrary.simpleMessage("Täna"),
@@ -168,6 +166,7 @@ class MessageLookup extends MessageLookupByLibrary {
         "no": MessageLookupByLibrary.simpleMessage("Ei"),
         "noDeviceLimit": MessageLookupByLibrary.simpleMessage("Puudub"),
         "ok": MessageLookupByLibrary.simpleMessage("OK"),
+        "onThisDay": MessageLookupByLibrary.simpleMessage("On this day"),
         "oops": MessageLookupByLibrary.simpleMessage("Oih"),
         "oopsSomethingWentWrong":
             MessageLookupByLibrary.simpleMessage("Oih, midagi läks valesti"),

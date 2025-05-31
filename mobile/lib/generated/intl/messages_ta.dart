@@ -31,8 +31,6 @@ class MessageLookup extends MessageLookupByLibrary {
             "கணக்கு நீக்குதலை உறுதிப்படுத்தவும்"),
         "confirmDeletePrompt": MessageLookupByLibrary.simpleMessage(
             "ஆம், எல்லா செயலிகளிலும் இந்தக் கணக்கையும் அதன் தரவையும் நிரந்தரமாக நீக்க விரும்புகிறேன்."),
-        "curatedMemories":
-            MessageLookupByLibrary.simpleMessage("Curated memories"),
         "deleteAccount": MessageLookupByLibrary.simpleMessage("கணக்கை நீக்கு"),
         "deleteAccountFeedbackPrompt": MessageLookupByLibrary.simpleMessage(
             "நீங்கள் வெளியேறுவதை கண்டு வருந்துகிறோம். எங்களை மேம்படுத்த உதவ உங்கள் கருத்தைப் பகிரவும்."),
@@ -41,6 +39,10 @@ class MessageLookup extends MessageLookupByLibrary {
         "deleteReason1": MessageLookupByLibrary.simpleMessage(
             "எனக்கு தேவையான ஒரு முக்கிய அம்சம் இதில் இல்லை"),
         "email": MessageLookupByLibrary.simpleMessage("மின்னஞ்சல்"),
+        "emailAlreadyRegistered": MessageLookupByLibrary.simpleMessage(
+            "மின்னஞ்சல் முன்பே பதிவுசெய்யப்பட்டுள்ளது."),
+        "emailNotRegistered": MessageLookupByLibrary.simpleMessage(
+            "மின்னஞ்சல் பதிவு செய்யப்படவில்லை."),
         "enterValidEmail": MessageLookupByLibrary.simpleMessage(
             "சரியான மின்னஞ்சல் முகவரியை உள்ளிடவும்."),
         "enterYourEmailAddress": MessageLookupByLibrary.simpleMessage(
@@ -50,6 +52,11 @@ class MessageLookup extends MessageLookupByLibrary {
             MessageLookupByLibrary.simpleMessage("தவறான மின்னஞ்சல் முகவரி"),
         "kindlyHelpUsWithThisInformation": MessageLookupByLibrary.simpleMessage(
             "இந்த தகவலுடன் தயவுசெய்து எங்களுக்கு உதவுங்கள்"),
-        "verify": MessageLookupByLibrary.simpleMessage("சரிபார்க்கவும்")
+        "onThisDay": MessageLookupByLibrary.simpleMessage("On this day"),
+        "selectReason": MessageLookupByLibrary.simpleMessage(
+            "காரணத்தைத் தேர்ந்தெடுக்கவும்"),
+        "verify": MessageLookupByLibrary.simpleMessage("சரிபார்க்கவும்"),
+        "yourAccountHasBeenDeleted":
+            MessageLookupByLibrary.simpleMessage("உங்கள் கணக்கு நீக்கப்பட்டது")
       };
 }

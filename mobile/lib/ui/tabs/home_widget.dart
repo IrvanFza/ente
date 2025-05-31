@@ -15,7 +15,6 @@ import 'package:modal_bottom_sheet/modal_bottom_sheet.dart';
 import "package:move_to_background/move_to_background.dart";
 import "package:package_info_plus/package_info_plus.dart";
 import 'package:photos/core/configuration.dart';
-import "package:photos/core/constants.dart";
 import 'package:photos/core/event_bus.dart';
 import 'package:photos/ente_theme_data.dart';
 import 'package:photos/events/account_configured_event.dart';
@@ -33,6 +32,7 @@ import "package:photos/l10n/l10n.dart";
 import "package:photos/models/collection/collection.dart";
 import 'package:photos/models/collection/collection_items.dart';
 import "package:photos/models/file/file.dart";
+import "package:photos/models/selected_albums.dart";
 import 'package:photos/models/selected_files.dart';
 import "package:photos/service_locator.dart";
 import 'package:photos/services/account/user_service.dart';
@@ -84,7 +84,6 @@ class HomeWidget extends StatefulWidget {
 }
 
 class _HomeWidgetState extends State<HomeWidget> {
-  static const _userCollectionsTab = UserCollectionsTab();
   static const _sharedCollectionTab = SharedCollectionsTab();
   static const _searchTab = SearchTab();
   static final _settingsPage = SettingsPage(
@@ -92,6 +91,7 @@ class _HomeWidgetState extends State<HomeWidget> {
   );
 
   final _logger = Logger("HomeWidgetState");
+  final _selectedAlbums = SelectedAlbums();
   final _selectedFiles = SelectedFiles();
 
   final PageController _pageController = PageController();
@@ -255,8 +255,7 @@ class _HomeWidgetState extends State<HomeWidget> {
     if (Platform.isAndroid &&
         !localSettings.hasConfiguredInAppLinkPermissions() &&
         RemoteSyncService.instance.isFirstRemoteSyncDone() &&
-        Configuration.instance.getHttpEndpoint() ==
-            kDefaultProductionEndpoint) {
+        Configuration.instance.isEnteProduction()) {
       PackageInfo.fromPlatform().then((packageInfo) {
         final packageName = packageInfo.packageName;
         if (packageName == 'io.ente.photos.independent' ||
@@ -443,15 +442,18 @@ class _HomeWidgetState extends State<HomeWidget> {
     _intentDataStreamSubscription =
         ReceiveSharingIntent.instance.getMediaStream().listen(
       (List<SharedMediaFile> value) {
-        if (value.isNotEmpty && value[0].path.contains("albums.ente.io")) {
+        if (value.isEmpty) {
+          return;
+        }
+        if (value[0].path.contains("albums.ente.io")) {
           final uri = Uri.parse(value[0].path);
           _handlePublicAlbumLink(uri);
           return;
         }
 
-        if (value.isNotEmpty &&
-            (value[0].mimeType == "image/*" ||
-                value[0].mimeType == "video/*")) {
+        if (value[0].mimeType != null &&
+            (value[0].mimeType!.contains("image") ||
+                value[0].mimeType!.contains("video"))) {
           showDialog(
             context: context,
             builder: (BuildContext context) {
@@ -708,7 +710,7 @@ class _HomeWidgetState extends State<HomeWidget> {
                         ),
                         selectedFiles: _selectedFiles,
                       ),
-                _userCollectionsTab,
+                UserCollectionsTab(selectedAlbums: _selectedAlbums),
                 _sharedCollectionTab,
                 _searchTab,
               ],
@@ -755,6 +757,7 @@ class _HomeWidgetState extends State<HomeWidget> {
                         : const SizedBox.shrink(),
                     HomeBottomNavigationBar(
                       _selectedFiles,
+                      _selectedAlbums,
                       selectedTabIndex: _selectedTabIndex,
                     ),
                   ],
@@ -852,22 +855,30 @@ class _HomeWidgetState extends State<HomeWidget> {
     final String? payload = notificationResponse.payload;
     if (payload != null) {
       debugPrint('notification payload: $payload');
-      final collectionID = Uri.parse(payload).queryParameters["collectionID"];
-      if (collectionID != null) {
-        final collection = CollectionsService.instance
-            .getCollectionByID(int.parse(collectionID))!;
-        final thumbnail =
-            await CollectionsService.instance.getCover(collection);
+      if (payload.toLowerCase().contains("onthisday")) {
         // ignore: unawaited_futures
-        routeToPage(
+        memoriesCacheService.goToMemoryFromMemoryID(
           context,
-          CollectionPage(
-            CollectionWithThumbnail(
-              collection,
-              thumbnail,
-            ),
-          ),
+          payload,
         );
+      } else {
+        final collectionID = Uri.parse(payload).queryParameters["collectionID"];
+        if (collectionID != null) {
+          final collection = CollectionsService.instance
+              .getCollectionByID(int.parse(collectionID))!;
+          final thumbnail =
+              await CollectionsService.instance.getCover(collection);
+          // ignore: unawaited_futures
+          routeToPage(
+            context,
+            CollectionPage(
+              CollectionWithThumbnail(
+                collection,
+                thumbnail,
+              ),
+            ),
+          );
+        }
       }
     }
   }

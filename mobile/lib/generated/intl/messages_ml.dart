@@ -42,8 +42,6 @@ class MessageLookup extends MessageLookupByLibrary {
             MessageLookupByLibrary.simpleMessage("അക്കൗണ്ട് തുറക്കുക"),
         "createNewAccount":
             MessageLookupByLibrary.simpleMessage("പുതിയ അക്കൗണ്ട് തുറക്കുക"),
-        "curatedMemories":
-            MessageLookupByLibrary.simpleMessage("Curated memories"),
         "custom": MessageLookupByLibrary.simpleMessage("ഇഷ്‌ടാനുസൃതം"),
         "darkTheme": MessageLookupByLibrary.simpleMessage("ഇരുണ്ട"),
         "deleteAccount":
@@ -91,6 +89,7 @@ class MessageLookup extends MessageLookupByLibrary {
         "nothingToSeeHere":
             MessageLookupByLibrary.simpleMessage("ഇവിടൊന്നും കാണ്മാനില്ല! 👀"),
         "ok": MessageLookupByLibrary.simpleMessage("ശരി"),
+        "onThisDay": MessageLookupByLibrary.simpleMessage("On this day"),
         "oops": MessageLookupByLibrary.simpleMessage("അയ്യോ"),
         "password": MessageLookupByLibrary.simpleMessage("സങ്കേതക്കുറി"),
         "pleaseTryAgain":

@@ -60,6 +60,16 @@ class S {
     );
   }
 
+  /// `Enter your new email address`
+  String get enterYourNewEmailAddress {
+    return Intl.message(
+      'Enter your new email address',
+      name: 'enterYourNewEmailAddress',
+      desc: '',
+      args: [],
+    );
+  }
+
   /// `Welcome back!`
   String get accountWelcomeBack {
     return Intl.message(
@@ -5197,6 +5207,16 @@ class S {
     );
   }
 
+  /// `Sorry, we could not backup this file right now, we will retry later.`
+  String get sorryBackupFailedDesc {
+    return Intl.message(
+      'Sorry, we could not backup this file right now, we will retry later.',
+      name: 'sorryBackupFailedDesc',
+      desc: '',
+      args: [],
+    );
+  }
+
   /// `We could not backup your data.\nWe will retry later.`
   String get couldNotBackUpTryLater {
     return Intl.message(
@@ -7270,10 +7290,10 @@ class S {
     );
   }
 
-  /// `We have preserved over 30 million memories so far`
+  /// `We have preserved over 200 million memories so far`
   String get loadMessage2 {
     return Intl.message(
-      'We have preserved over 30 million memories so far',
+      'We have preserved over 200 million memories so far',
       name: 'loadMessage2',
       desc: '',
       args: [],
@@ -9083,6 +9103,26 @@ class S {
       name: 'enterPersonName',
       desc: '',
       args: [],
+    );
+  }
+
+  /// `This email is already linked to {name}.`
+  String editEmailAlreadyLinked(Object name) {
+    return Intl.message(
+      'This email is already linked to $name.',
+      name: 'editEmailAlreadyLinked',
+      desc: '',
+      args: [name],
+    );
+  }
+
+  /// `View {name} to unlink`
+  String viewPersonToUnlink(Object name) {
+    return Intl.message(
+      'View $name to unlink',
+      name: 'viewPersonToUnlink',
+      desc: '',
+      args: [name],
     );
   }
 
@@ -11071,10 +11111,10 @@ class S {
     );
   }
 
-  /// `Video streaming`
+  /// `Streamable videos`
   String get videoStreaming {
     return Intl.message(
-      'Video streaming',
+      'Streamable videos',
       name: 'videoStreaming',
       desc: '',
       args: [],
@@ -11666,111 +11706,61 @@ class S {
     );
   }
 
-  /// `New Icon`
-  String get cLIcon {
-    return Intl.message(
-      'New Icon',
-      name: 'cLIcon',
-      desc: '',
-      args: [],
-    );
-  }
-
-  /// `Finally, a new app icon, that we think best represents our work. We've also added an icon-switcher so you can continue using the old icon.`
-  String get cLIconDesc {
-    return Intl.message(
-      'Finally, a new app icon, that we think best represents our work. We\'ve also added an icon-switcher so you can continue using the old icon.',
-      name: 'cLIconDesc',
-      desc: '',
-      args: [],
-    );
-  }
-
-  /// `Memories`
-  String get cLMemories {
-    return Intl.message(
-      'Memories',
-      name: 'cLMemories',
-      desc: '',
-      args: [],
-    );
-  }
-
-  /// `Rediscover your special moments - spotlight on your favorite people, your trips and holidays, your best clicks, and much more. Turn on machine learning, tag yourself and name your friends for the best experience.`
-  String get cLMemoriesDesc {
-    return Intl.message(
-      'Rediscover your special moments - spotlight on your favorite people, your trips and holidays, your best clicks, and much more. Turn on machine learning, tag yourself and name your friends for the best experience.',
-      name: 'cLMemoriesDesc',
-      desc: '',
-      args: [],
-    );
-  }
-
-  /// `Widgets`
-  String get cLWidgets {
-    return Intl.message(
-      'Widgets',
-      name: 'cLWidgets',
-      desc: '',
-      args: [],
-    );
-  }
-
-  /// `Home screen widgets that are integrated with memories are now available. They will show your special moments without opening the app.`
-  String get cLWidgetsDesc {
-    return Intl.message(
-      'Home screen widgets that are integrated with memories are now available. They will show your special moments without opening the app.',
-      name: 'cLWidgetsDesc',
-      desc: '',
-      args: [],
-    );
-  }
-
-  /// `Family Plan Limits`
-  String get cLFamilyPlan {
-    return Intl.message(
-      'Family Plan Limits',
-      name: 'cLFamilyPlan',
-      desc: '',
-      args: [],
-    );
-  }
-
-  /// `You can now set limits on how much storage your family members can use.`
-  String get cLFamilyPlanDesc {
-    return Intl.message(
-      'You can now set limits on how much storage your family members can use.',
-      name: 'cLFamilyPlanDesc',
-      desc: '',
-      args: [],
-    );
-  }
-
-  /// `Bulk Edit dates`
-  String get cLBulkEdit {
-    return Intl.message(
-      'Bulk Edit dates',
-      name: 'cLBulkEdit',
-      desc: '',
-      args: [],
-    );
-  }
-
-  /// `You can now select multiple photos, and edit date/time for all of them with one quick action. Shifting dates is also supported.`
-  String get cLBulkEditDesc {
-    return Intl.message(
-      'You can now select multiple photos, and edit date/time for all of them with one quick action. Shifting dates is also supported.',
-      name: 'cLBulkEditDesc',
-      desc: '',
-      args: [],
-    );
-  }
-
   /// `Curated memories`
   String get curatedMemories {
     return Intl.message(
       'Curated memories',
       name: 'curatedMemories',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `On this day`
+  String get onThisDay {
+    return Intl.message(
+      'On this day',
+      name: 'onThisDay',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Also delete the photos (and videos) present in these {count} albums from <bold>all</bold> other albums they are part of?`
+  String deleteMultipleAlbumDialog(Object count) {
+    return Intl.message(
+      'Also delete the photos (and videos) present in these $count albums from <bold>all</bold> other albums they are part of?',
+      name: 'deleteMultipleAlbumDialog',
+      desc: '',
+      args: [count],
+    );
+  }
+
+  /// `Add participants`
+  String get addParticipants {
+    return Intl.message(
+      'Add participants',
+      name: 'addParticipants',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `{count} selected`
+  String selectedAlbums(Object count) {
+    return Intl.message(
+      '$count selected',
+      name: 'selectedAlbums',
+      desc: '',
+      args: [count],
+    );
+  }
+
+  /// `Action not supported on Favourites album`
+  String get actionNotSupportedOnFavouritesAlbum {
+    return Intl.message(
+      'Action not supported on Favourites album',
+      name: 'actionNotSupportedOnFavouritesAlbum',
       desc: '',
       args: [],
     );
@@ -11793,6 +11783,7 @@ class AppLocalizationDelegate extends LocalizationsDelegate<S> {
       Locale.fromSubtags(languageCode: 'el'),
       Locale.fromSubtags(languageCode: 'es'),
       Locale.fromSubtags(languageCode: 'et'),
+      Locale.fromSubtags(languageCode: 'eu'),
       Locale.fromSubtags(languageCode: 'fa'),
       Locale.fromSubtags(languageCode: 'fr'),
       Locale.fromSubtags(languageCode: 'gu'),
