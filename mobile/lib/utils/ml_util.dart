@@ -15,7 +15,6 @@ import "package:photos/models/ml/face/dimension.dart";
 import "package:photos/models/ml/face/face.dart";
 import "package:photos/models/ml/ml_versions.dart";
 import "package:photos/service_locator.dart";
-import "package:photos/services/filedata/filedata_service.dart";
 import "package:photos/services/filedata/model/file_data.dart";
 import "package:photos/services/machine_learning/face_ml/face_recognition_service.dart";
 import "package:photos/services/machine_learning/ml_exceptions.dart";
@@ -56,7 +55,7 @@ class FileMLInstruction {
 Future<IndexStatus> getIndexStatus() async {
   try {
     final mlDataDB = MLDataDB.instance;
-    final int indexableFiles = (await getIndexableFileIDs()).length;
+    final int indexableFiles = await getIndexableFileCount();
     final int facesIndexedFiles = await mlDataDB.getFaceIndexedFileCount();
     final int clipIndexedFiles = await mlDataDB.getClipIndexedFileCount();
     final int indexedFiles = math.min(facesIndexedFiles, clipIndexedFiles);
@@ -205,7 +204,7 @@ Stream<List<FileMLInstruction>> fetchEmbeddingsAndInstructions(
       pendingIndex[instruction.file.uploadedFileID!] = instruction;
     }
     _logger.info("fetching embeddings for ${ids.length} files");
-    final res = await FileDataService.instance.getFilesData(ids);
+    final res = await fileDataService.getFilesData(ids);
     _logger.info("embeddingResponse ${res.debugLog()}");
     final List<Face> faces = [];
     final List<ClipEmbedding> clipEmbeddings = [];
@@ -320,9 +319,8 @@ bool _shouldDiscardRemoteEmbedding(FileDataEntity fileML) {
   return false;
 }
 
-Future<Set<int>> getIndexableFileIDs() async {
-  final fileIDs = await FilesDB.instance.getAllFileIDs();
-  return fileIDs.toSet();
+Future<int> getIndexableFileCount() async {
+  return FilesDB.instance.remoteFileCount();
 }
 
 Future<String> getImagePathForML(EnteFile enteFile) async {
@@ -411,7 +409,10 @@ Future<MLResult> analyzeImageStatic(Map args) async {
     final startTime = DateTime.now();
 
     // Decode the image once to use for both face detection and alignment
-    final (image, rawRgbaBytes) = await decodeImageFromPath(imagePath);
+    final decodedImage =
+        await decodeImageFromPath(imagePath, includeRgbaBytes: true);
+    final image = decodedImage.image;
+    final rawRgbaBytes = decodedImage.rawRgbaBytes!;
     final decodedImageSize =
         Dimensions(height: image.height, width: image.width);
     final result = MLResult.fromEnteFileID(enteFileID);

@@ -20,12 +20,12 @@ typedef String MessageIfAbsent(String messageStr, List<dynamic> args);
 class MessageLookup extends MessageLookupByLibrary {
   String get localeName => 'be';
 
-  static String m18(passwordStrengthValue) =>
+  static String m56(passwordStrengthValue) =>
       "Надзейнасць пароля: ${passwordStrengthValue}";
 
-  static String m34(storageAmountInGB) => "${storageAmountInGB} Гб";
+  static String m91(storageAmountInGB) => "${storageAmountInGB} Гб";
 
-  static String m41(email) =>
+  static String m112(email) =>
       "Ліст адпраўлены на электронную пошту <green>${email}</green>";
 
   final messages = _notInlinedMessages(_notInlinedMessages);
@@ -49,6 +49,7 @@ class MessageLookup extends MessageLookupByLibrary {
         "askDeleteReason": MessageLookupByLibrary.simpleMessage(
             "Якая асноўная прычына выдалення вашага ўліковага запісу?"),
         "backup": MessageLookupByLibrary.simpleMessage("Рэзервовая копія"),
+        "birthdays": MessageLookupByLibrary.simpleMessage("Birthdays"),
         "cancel": MessageLookupByLibrary.simpleMessage("Скасаваць"),
         "change": MessageLookupByLibrary.simpleMessage("Змяніць"),
         "changeEmail": MessageLookupByLibrary.simpleMessage(
@@ -57,6 +58,8 @@ class MessageLookup extends MessageLookupByLibrary {
             MessageLookupByLibrary.simpleMessage("Змяніць пароль"),
         "checkInboxAndSpamFolder": MessageLookupByLibrary.simpleMessage(
             "Праверце свае ўваходныя лісты (і спам) для завяршэння праверкі"),
+        "clickToInstallOurBestVersionYet": MessageLookupByLibrary.simpleMessage(
+            "Click to install our best version yet"),
         "codeAppliedPageTitle":
             MessageLookupByLibrary.simpleMessage("Код ужыты"),
         "confirm": MessageLookupByLibrary.simpleMessage("Пацвердзіць"),
@@ -74,8 +77,6 @@ class MessageLookup extends MessageLookupByLibrary {
             MessageLookupByLibrary.simpleMessage("Стварыць уліковы запіс"),
         "createNewAccount":
             MessageLookupByLibrary.simpleMessage("Стварыць новы ўліковы запіс"),
-        "curatedMemories":
-            MessageLookupByLibrary.simpleMessage("Curated memories"),
         "darkTheme": MessageLookupByLibrary.simpleMessage("Цёмная"),
         "decrypting": MessageLookupByLibrary.simpleMessage("Расшыфроўка..."),
         "deleteAccount":
@@ -143,6 +144,8 @@ class MessageLookup extends MessageLookupByLibrary {
         "general": MessageLookupByLibrary.simpleMessage("Асноўныя"),
         "generatingEncryptionKeys": MessageLookupByLibrary.simpleMessage(
             "Генерацыя ключоў шыфравання..."),
+        "happyBirthday":
+            MessageLookupByLibrary.simpleMessage("Happy birthday! 🥳"),
         "howItWorks": MessageLookupByLibrary.simpleMessage("Як гэта працуе"),
         "ignoreUpdate": MessageLookupByLibrary.simpleMessage("Iгнараваць"),
         "incorrectPasswordTitle":
@@ -169,12 +172,15 @@ class MessageLookup extends MessageLookupByLibrary {
         "loginTerms": MessageLookupByLibrary.simpleMessage(
             "Націскаючы ўвайсці, я пагаджаюся з <u-terms>умовамі абслугоўвання</u-terms> і <u-policy>палітыкай прыватнасці</u-policy>"),
         "logout": MessageLookupByLibrary.simpleMessage("Выйсці"),
+        "lookBackOnYourMemories": MessageLookupByLibrary.simpleMessage(
+            "Look back on your memories 🌄"),
         "lostDevice": MessageLookupByLibrary.simpleMessage("Згубілі прыладу?"),
         "magicSearch": MessageLookupByLibrary.simpleMessage("Магічны пошук"),
         "manage": MessageLookupByLibrary.simpleMessage("Кіраванне"),
         "manageParticipants": MessageLookupByLibrary.simpleMessage("Кіраванне"),
         "moderateStrength": MessageLookupByLibrary.simpleMessage("Умераны"),
         "never": MessageLookupByLibrary.simpleMessage("Ніколі"),
+        "newPhotosEmoji": MessageLookupByLibrary.simpleMessage(" new 📸"),
         "noDuplicates":
             MessageLookupByLibrary.simpleMessage("✨ Няма дублікатаў"),
         "noRecoveryKey":
@@ -183,13 +189,16 @@ class MessageLookup extends MessageLookupByLibrary {
             "Вашы даныя не могуць быць расшыфраваны без пароля або ключа аднаўлення па прычыне архітэктуры наша пратакола скразнога шыфравання"),
         "notifications": MessageLookupByLibrary.simpleMessage("Апавяшчэнні"),
         "ok": MessageLookupByLibrary.simpleMessage("Добра"),
+        "onThisDay": MessageLookupByLibrary.simpleMessage("On this day"),
+        "onThisDayNotificationExplanation": MessageLookupByLibrary.simpleMessage(
+            "Receive reminders about memories from this day in previous years."),
         "oops": MessageLookupByLibrary.simpleMessage("Вой"),
         "oopsSomethingWentWrong":
             MessageLookupByLibrary.simpleMessage("Штосьці пайшло не так"),
         "password": MessageLookupByLibrary.simpleMessage("Пароль"),
         "passwordChangedSuccessfully":
             MessageLookupByLibrary.simpleMessage("Пароль паспяхова зменены"),
-        "passwordStrength": m18,
+        "passwordStrength": m56,
         "passwordWarning": MessageLookupByLibrary.simpleMessage(
             "Мы не захоўваем гэты пароль і <underline>мы не зможам расшыфраваць вашы даныя</underline>, калі вы забудзеце яго"),
         "photoSmallCase": MessageLookupByLibrary.simpleMessage("фота"),
@@ -199,6 +208,8 @@ class MessageLookup extends MessageLookupByLibrary {
         "privacyPolicyTitle":
             MessageLookupByLibrary.simpleMessage("Палітыка прыватнасці"),
         "rateUs": MessageLookupByLibrary.simpleMessage("Ацаніце нас"),
+        "receiveRemindersOnBirthdays": MessageLookupByLibrary.simpleMessage(
+            "Receive reminders when it\'s someone\'s birthday. Tapping on the notification will take you to photos of the birthday person."),
         "recover": MessageLookupByLibrary.simpleMessage("Аднавіць"),
         "recoverAccount":
             MessageLookupByLibrary.simpleMessage("Аднавіць уліковы запіс"),
@@ -250,8 +261,10 @@ class MessageLookup extends MessageLookupByLibrary {
         "sorryWeCouldNotGenerateSecureKeysOnThisDevicennplease":
             MessageLookupByLibrary.simpleMessage(
                 "Немагчыма згенерыраваць ключы бяспекі на гэтай прыладзе.\n\nЗарэгіструйцеся з іншай прылады."),
+        "sorryWeHadToPauseYourBackups": MessageLookupByLibrary.simpleMessage(
+            "Sorry, we had to pause your backups"),
         "status": MessageLookupByLibrary.simpleMessage("Стан"),
-        "storageInGB": m34,
+        "storageInGB": m91,
         "strongStrength": MessageLookupByLibrary.simpleMessage("Надзейны"),
         "support": MessageLookupByLibrary.simpleMessage("Падтрымка"),
         "systemTheme": MessageLookupByLibrary.simpleMessage("Сістэма"),
@@ -290,7 +303,7 @@ class MessageLookup extends MessageLookupByLibrary {
         "videoSmallCase": MessageLookupByLibrary.simpleMessage("відэа"),
         "viewLargeFiles": MessageLookupByLibrary.simpleMessage("Вялікія файлы"),
         "viewer": MessageLookupByLibrary.simpleMessage("Праглядальнік"),
-        "weHaveSendEmailTo": m41,
+        "weHaveSendEmailTo": m112,
         "weakStrength": MessageLookupByLibrary.simpleMessage("Ненадзейны"),
         "welcomeBack": MessageLookupByLibrary.simpleMessage("З вяртаннем!"),
         "yesDelete": MessageLookupByLibrary.simpleMessage("Так, выдаліць"),

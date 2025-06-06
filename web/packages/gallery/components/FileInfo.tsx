@@ -37,9 +37,11 @@ import {
 import { LinkButtonUndecorated } from "ente-base/components/LinkButton";
 import { type ButtonishProps } from "ente-base/components/mui";
 import { ActivityIndicator } from "ente-base/components/mui/ActivityIndicator";
-import { SidebarDrawer } from "ente-base/components/mui/SidebarDrawer";
+import {
+    SidebarDrawer,
+    SidebarDrawerTitlebar,
+} from "ente-base/components/mui/SidebarDrawer";
 import { SingleInputForm } from "ente-base/components/SingleInputForm";
-import { Titlebar } from "ente-base/components/Titlebar";
 import { EllipsizedTypography } from "ente-base/components/Typography";
 import {
     useModalVisibility,
@@ -215,6 +217,21 @@ export const FileInfo: React.FC<FileInfoProps> = ({
     useEffect(() => {
         if (!isMLEnabled()) return;
 
+        // Take a dependency on open so that we refresh the list of people by
+        // calling `getAnnotatedFacesForFile` again when the file info dialog is
+        // closed and reopened.
+        //
+        // This covers a scenario like:
+        // - User opens file info panel
+        // - Selects one of the faces
+        // - Gives it a name
+        // - Then opens the same file again, and reopens the file info panel.
+        //
+        // Since the `file` hasn't changed, this hook wouldn't rerun. So we also
+        // take a dependency on the open state of the dialog, causing us to
+        // rerun whenever reopened (even if for the same file).
+        if (!open) return;
+
         let didCancel = false;
 
         void getAnnotatedFacesForFile(file).then(
@@ -224,7 +241,7 @@ export const FileInfo: React.FC<FileInfoProps> = ({
         return () => {
             didCancel = true;
         };
-    }, [file]);
+    }, [file, open]);
 
     const openEnableMapConfirmationDialog = () =>
         showMiniDialog(
@@ -241,9 +258,15 @@ export const FileInfo: React.FC<FileInfoProps> = ({
         onSelectPerson?.(personID);
     };
 
+    const uploaderName = filePublicMagicMetadata(file)?.uploaderName;
+
     return (
         <FileInfoSidebar {...{ open, onClose }}>
-            <Titlebar onClose={onClose} title={t("info")} backIsClose />
+            <SidebarDrawerTitlebar
+                onClose={onClose}
+                onRootClose={onClose}
+                title={t("info")}
+            />
             <Stack sx={{ pt: 1, pb: 3, gap: "20px" }}>
                 <Caption
                     {...{
@@ -350,6 +373,14 @@ export const FileInfo: React.FC<FileInfoProps> = ({
                             }}
                         />
                     )}
+                {uploaderName && (
+                    <Typography
+                        variant="small"
+                        sx={{ m: 2, textAlign: "right", color: "text.muted" }}
+                    >
+                        {t("added_by_name", { name: uploaderName })}
+                    </Typography>
+                )}
             </Stack>
             <RawExif
                 {...rawExifVisibilityProps}
@@ -567,7 +598,9 @@ const Caption: React.FC<CaptionProps> = ({
     const { values, errors, handleChange, handleSubmit, resetForm } = formik;
 
     if (!caption.length && !allowEdits) {
-        return <></>;
+        // Visually take up some space, otherwise the info panel for the shared
+        // photos without a caption looks squished at the top.
+        return <Box sx={{ minHeight: 2 }}></Box>;
     }
 
     return (
@@ -809,8 +842,8 @@ const RenameFileDialog: React.FC<RenameFileDialogProps> = ({
                 <SingleInputForm
                     label={t("file_name")}
                     placeholder={t("file_name")}
-                    autoFocus
                     initialValue={name}
+                    submitButtonColor="primary"
                     submitButtonTitle={t("rename")}
                     onSubmit={handleSubmit}
                     onCancel={onClose}
@@ -956,11 +989,11 @@ const RawExif: React.FC<RawExifProps> = ({
 
     return (
         <FileInfoSidebar open={open} onClose={onClose}>
-            <Titlebar
+            <SidebarDrawerTitlebar
                 onClose={onClose}
+                onRootClose={handleRootClose}
                 title={t("exif")}
                 caption={fileName}
-                onRootClose={handleRootClose}
                 actionButton={
                     <CopyButton size="small" text={JSON.stringify(tags)} />
                 }
