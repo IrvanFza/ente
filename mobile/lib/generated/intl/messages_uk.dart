@@ -20,219 +20,216 @@ typedef String MessageIfAbsent(String messageStr, List<dynamic> args);
 class MessageLookup extends MessageLookupByLibrary {
   String get localeName => 'uk';
 
-  static String m0(storageAmount, endDate) =>
+  static String m3(storageAmount, endDate) =>
       "Ваше доповнення ${storageAmount} діє до ${endDate}";
 
-  static String m48(emailOrName) => "Додано ${emailOrName}";
+  static String m5(emailOrName) => "Додано ${emailOrName}";
 
-  static String m49(albumName) => "Успішно додано до «${albumName}»";
+  static String m6(albumName) => "Успішно додано до «${albumName}»";
 
-  static String m1(count) =>
+  static String m8(count) =>
       "${Intl.plural(count, zero: 'Немає учасників', one: '1 учасник', other: '${count} учасників')}";
 
-  static String m51(versionValue) => "Версія: ${versionValue}";
+  static String m9(versionValue) => "Версія: ${versionValue}";
 
-  static String m52(freeAmount, storageUnit) =>
+  static String m10(freeAmount, storageUnit) =>
       "${freeAmount} ${storageUnit} вільно";
 
-  static String m2(paymentProvider) =>
+  static String m12(paymentProvider) =>
       "Спочатку скасуйте вашу передплату від ${paymentProvider}";
 
-  static String m3(user) =>
+  static String m13(user) =>
       "${user} не зможе додавати більше фотографій до цього альбому\n\nВони все ще зможуть видаляти додані ними фотографії";
 
-  static String m4(isFamilyMember, storageAmountInGb) =>
+  static String m14(isFamilyMember, storageAmountInGb) =>
       "${Intl.select(isFamilyMember, {
             'true': 'Ваша сім\'я отримала ${storageAmountInGb} ГБ',
             'false': 'Ви отримали ${storageAmountInGb} ГБ',
             'other': 'Ви отримали ${storageAmountInGb} ГБ!',
           })}";
 
-  static String m54(albumName) =>
+  static String m15(albumName) =>
       "Створено спільне посилання для «${albumName}»";
 
-  static String m55(count) =>
-      "${Intl.plural(count, zero: 'Додано 0 співавторів', one: 'Додано 1 співавтор', few: 'Додано ${count} співаторів', many: 'Додано ${count} співаторів', other: 'Додано ${count} співавторів')}";
-
-  static String m56(email, numOfDays) =>
+  static String m17(email, numOfDays) =>
       "Ви збираєтеся додати ${email} як довірений контакт. Вони зможуть відновити ваш обліковий запис, якщо ви будете відсутні протягом ${numOfDays} днів.";
 
-  static String m5(familyAdminEmail) =>
+  static String m18(familyAdminEmail) =>
       "Зв\'яжіться з <green>${familyAdminEmail}</green> для керування вашою передплатою";
 
-  static String m6(provider) =>
+  static String m19(provider) =>
       "Зв\'яжіться з нами за адресою support@ente.io для управління вашою передплатою ${provider}.";
 
-  static String m57(endpoint) => "Під\'єднано до ${endpoint}";
+  static String m20(endpoint) => "Під\'єднано до ${endpoint}";
 
-  static String m7(count) =>
-      "${Intl.plural(count, one: 'Видалено ${count} елемент', few: 'Видалено ${count} елементи', many: 'Видалено ${count} елементів', other: 'Видалено ${count} елементів')}";
+  static String m21(count) =>
+      "${Intl.plural(count, one: 'Видалено ${count} елемент', other: 'Видалено ${count} елементів')}";
 
-  static String m58(currentlyDeleting, totalCount) =>
+  static String m22(currentlyDeleting, totalCount) =>
       "Видалення ${currentlyDeleting} / ${totalCount}";
 
-  static String m8(albumName) =>
+  static String m23(albumName) =>
       "Це видалить публічне посилання для доступу до «${albumName}».";
 
-  static String m9(supportEmail) =>
+  static String m24(supportEmail) =>
       "Надішліть листа на ${supportEmail} з вашої зареєстрованої поштової адреси";
 
-  static String m10(count, storageSaved) =>
+  static String m25(count, storageSaved) =>
       "Ви очистили ${Intl.plural(count, one: '${count} дублікат файлу', other: '${count} дублікатів файлів')}, збережено (${storageSaved}!)";
 
-  static String m11(count, formattedSize) =>
+  static String m26(count, formattedSize) =>
       "${count} файлів, кожен по ${formattedSize}";
 
-  static String m59(newEmail) => "Поштову адресу змінено на ${newEmail}";
+  static String m28(newEmail) => "Поштову адресу змінено на ${newEmail}";
 
-  static String m12(email) =>
+  static String m30(email) =>
       "У ${email} немає облікового запису Ente.\n\nНадішліть їм запрошення для обміну фотографіями.";
 
-  static String m62(text) => "Знайдено додаткові фотографії для ${text}";
+  static String m32(text) => "Знайдено додаткові фотографії для ${text}";
 
-  static String m64(count, formattedNumber) =>
+  static String m34(count, formattedNumber) =>
       "${Intl.plural(count, one: 'Для 1 файлу', other: 'Для ${formattedNumber} файлів')} на цьому пристрої було створено резервну копію";
 
-  static String m65(count, formattedNumber) =>
-      "${Intl.plural(count, one: 'Для 1 файлу', few: 'Для ${formattedNumber} файлів', many: 'Для ${formattedNumber} файлів', other: 'Для ${formattedNumber} файлів')} у цьому альбомі було створено резервну копію";
+  static String m35(count, formattedNumber) =>
+      "${Intl.plural(count, one: 'Для 1 файлу', other: 'Для ${formattedNumber} файлів')} у цьому альбомі було створено резервну копію";
 
-  static String m13(storageAmountInGB) =>
+  static String m36(storageAmountInGB) =>
       "${storageAmountInGB} ГБ щоразу, коли хтось оформлює передплату і застосовує ваш код";
 
-  static String m14(endDate) => "Безплатна пробна версія діє до ${endDate}";
+  static String m37(endDate) => "Безплатна пробна версія діє до ${endDate}";
 
-  static String m67(sizeInMBorGB) => "Звільніть ${sizeInMBorGB}";
+  static String m39(sizeInMBorGB) => "Звільніть ${sizeInMBorGB}";
 
-  static String m69(currentlyProcessing, totalCount) =>
+  static String m41(currentlyProcessing, totalCount) =>
       "Обробка ${currentlyProcessing} / ${totalCount}";
 
-  static String m15(count) =>
+  static String m43(count) =>
       "${Intl.plural(count, one: '${count} елемент', few: '${count} елементи', many: '${count} елементів', other: '${count} елементів')}";
 
-  static String m72(email) => "${email} запросив вас стати довіреною особою";
+  static String m45(email) => "${email} запросив вас стати довіреною особою";
 
-  static String m16(expiryTime) => "Посилання закінчується через ${expiryTime}";
+  static String m46(expiryTime) => "Посилання закінчується через ${expiryTime}";
 
-  static String m77(albumName) => "Успішно перенесено до «${albumName}»";
+  static String m51(albumName) => "Успішно перенесено до «${albumName}»";
 
-  static String m78(personName) => "Немає пропозицій для ${personName}";
+  static String m52(personName) => "Немає пропозицій для ${personName}";
 
-  static String m79(name) => "Не ${name}?";
+  static String m53(name) => "Не ${name}?";
 
-  static String m17(familyAdminEmail) =>
+  static String m54(familyAdminEmail) =>
       "Зв\'яжіться з ${familyAdminEmail}, щоб змінити код.";
 
-  static String m18(passwordStrengthValue) =>
+  static String m56(passwordStrengthValue) =>
       "Надійність пароля: ${passwordStrengthValue}";
 
-  static String m19(providerName) =>
+  static String m57(providerName) =>
       "Зверніться до ${providerName}, якщо було знято платіж";
 
-  static String m20(endDate) =>
+  static String m62(endDate) =>
       "Безплатна пробна версія діє до ${endDate}.\nПісля цього ви можете обрати платний план.";
 
-  static String m85(toEmail) => "Напишіть нам на ${toEmail}";
+  static String m63(toEmail) => "Напишіть нам на ${toEmail}";
 
-  static String m86(toEmail) => "Надішліть журнали на \n${toEmail}";
+  static String m64(toEmail) => "Надішліть журнали на \n${toEmail}";
 
-  static String m88(folderName) => "Оброблюємо «${folderName}»...";
+  static String m66(folderName) => "Оброблюємо «${folderName}»...";
 
-  static String m21(storeName) => "Оцініть нас в ${storeName}";
+  static String m67(storeName) => "Оцініть нас в ${storeName}";
 
-  static String m90(days, email) =>
+  static String m69(days, email) =>
       "Ви зможете отримати доступ до облікового запису через ${days} днів. Повідомлення буде надіслано на ${email}.";
 
-  static String m91(email) =>
+  static String m70(email) =>
       "Тепер ви можете відновити обліковий запис ${email}, встановивши новий пароль.";
 
-  static String m92(email) =>
+  static String m71(email) =>
       "${email} намагається відновити ваш обліковий запис.";
 
-  static String m22(storageInGB) =>
+  static String m72(storageInGB) =>
       "3. Ви обоє отримуєте ${storageInGB} ГБ* безплатно";
 
-  static String m23(userEmail) =>
+  static String m73(userEmail) =>
       "${userEmail} буде видалено з цього спільного альбому\n\nБудь-які додані вами фото, будуть також видалені з альбому";
 
-  static String m24(endDate) => "Передплата поновиться ${endDate}";
+  static String m74(endDate) => "Передплата поновиться ${endDate}";
 
-  static String m94(count) =>
+  static String m76(count) =>
       "${Intl.plural(count, one: 'Знайдено ${count} результат', few: 'Знайдено ${count} результати', many: 'Знайдено ${count} результатів', other: 'Знайдено ${count} результати')}";
 
-  static String m95(snapshotLength, searchLength) =>
+  static String m77(snapshotLength, searchLength) =>
       "Невідповідність довжини розділів: ${snapshotLength} != ${searchLength}";
 
-  static String m25(count) => "${count} вибрано";
+  static String m78(count) => "${count} вибрано";
 
-  static String m26(count, yourCount) => "${count} вибрано (${yourCount} ваші)";
+  static String m79(count, yourCount) => "${count} вибрано (${yourCount} ваші)";
 
-  static String m27(verificationID) =>
+  static String m81(verificationID) =>
       "Ось мій ідентифікатор підтвердження: ${verificationID} для ente.io.";
 
-  static String m28(verificationID) =>
+  static String m82(verificationID) =>
       "Гей, ви можете підтвердити, що це ваш ідентифікатор підтвердження: ${verificationID}";
 
-  static String m29(referralCode, referralStorageInGB) =>
+  static String m83(referralCode, referralStorageInGB) =>
       "Реферальний код Ente: ${referralCode} \n\nЗастосуйте його в «Налаштування» → «Загальні» → «Реферали», щоб отримати ${referralStorageInGB} ГБ безплатно після переходу на платний тариф\n\nhttps://ente.io";
 
-  static String m30(numberOfPeople) =>
+  static String m84(numberOfPeople) =>
       "${Intl.plural(numberOfPeople, zero: 'Поділитися з конкретними людьми', one: 'Поділитися з 1 особою', other: 'Поділитися з ${numberOfPeople} людьми')}";
 
-  static String m97(emailIDs) => "Поділилися з ${emailIDs}";
+  static String m85(emailIDs) => "Поділилися з ${emailIDs}";
 
-  static String m31(fileType) => "Цей ${fileType} буде видалено з пристрою.";
+  static String m86(fileType) => "Цей ${fileType} буде видалено з пристрою.";
 
-  static String m32(fileType) =>
+  static String m87(fileType) =>
       "Цей ${fileType} знаходиться і в Ente, і на вашому пристрої.";
 
-  static String m33(fileType) => "Цей ${fileType} буде видалено з Ente.";
+  static String m88(fileType) => "Цей ${fileType} буде видалено з Ente.";
 
-  static String m34(storageAmountInGB) => "${storageAmountInGB} ГБ";
+  static String m91(storageAmountInGB) => "${storageAmountInGB} ГБ";
 
-  static String m100(
+  static String m92(
           usedAmount, usedStorageUnit, totalAmount, totalStorageUnit) =>
       "${usedAmount} ${usedStorageUnit} з ${totalAmount} ${totalStorageUnit} використано";
 
-  static String m35(id) =>
+  static String m93(id) =>
       "Ваш ${id} вже пов\'язаний з іншим обліковим записом Ente.\nЯкщо ви хочете використовувати свій ${id} з цим обліковим записом, зверніться до нашої служби підтримки";
 
-  static String m36(endDate) => "Вашу передплату буде скасовано ${endDate}";
+  static String m94(endDate) => "Вашу передплату буде скасовано ${endDate}";
 
-  static String m101(completed, total) =>
+  static String m95(completed, total) =>
       "${completed} / ${total} спогадів збережено";
 
-  static String m102(ignoreReason) =>
+  static String m96(ignoreReason) =>
       "Натисніть, щоб завантажити; завантаження наразі ігнорується через: ${ignoreReason}";
 
-  static String m37(storageAmountInGB) =>
+  static String m97(storageAmountInGB) =>
       "Вони також отримують ${storageAmountInGB} ГБ";
 
-  static String m38(email) => "Це ідентифікатор підтвердження пошти ${email}";
+  static String m98(email) => "Це ідентифікатор підтвердження пошти ${email}";
 
-  static String m105(count) =>
+  static String m101(count) =>
       "${Intl.plural(count, zero: 'Незабаром', one: '1 день', other: '${count} днів')}";
 
-  static String m108(email) =>
+  static String m104(email) =>
       "Ви отримали запрошення стати спадковим контактом від ${email}.";
 
-  static String m109(galleryType) =>
+  static String m105(galleryType) =>
       "Тип галереї «${galleryType}» не підтримується для перейменування";
 
-  static String m110(ignoreReason) =>
+  static String m106(ignoreReason) =>
       "Завантаження проігноровано через: ${ignoreReason}";
 
-  static String m111(count) => "Збереження ${count} спогадів...";
+  static String m107(count) => "Збереження ${count} спогадів...";
 
-  static String m39(endDate) => "Діє до ${endDate}";
+  static String m108(endDate) => "Діє до ${endDate}";
 
-  static String m40(email) => "Підтвердити ${email}";
+  static String m109(email) => "Підтвердити ${email}";
 
-  static String m41(email) => "Ми надіслали листа на <green>${email}</green>";
+  static String m112(email) => "Ми надіслали листа на <green>${email}</green>";
 
-  static String m42(count) =>
-      "${Intl.plural(count, one: '${count} рік тому', few: '${count} роки тому', many: '${count} років тому', other: '${count} років тому')}";
+  static String m113(count) =>
+      "${Intl.plural(count, one: '${count} рік тому', other: '${count} років тому')}";
 
-  static String m43(storageSaved) => "Ви успішно звільнили ${storageSaved}!";
+  static String m115(storageSaved) => "Ви успішно звільнили ${storageSaved}!";
 
   final messages = _notInlinedMessages(_notInlinedMessages);
   static Map<String, Function> _notInlinedMessages(_) => <String, Function>{
@@ -271,7 +268,7 @@ class MessageLookup extends MessageLookupByLibrary {
             MessageLookupByLibrary.simpleMessage("Додати нову особу"),
         "addOnPageSubtitle":
             MessageLookupByLibrary.simpleMessage("Подробиці доповнень"),
-        "addOnValidTill": m0,
+        "addOnValidTill": m3,
         "addOns": MessageLookupByLibrary.simpleMessage("Доповнення"),
         "addPhotos": MessageLookupByLibrary.simpleMessage("Додати фотографії"),
         "addSelected": MessageLookupByLibrary.simpleMessage("Додати вибране"),
@@ -285,8 +282,8 @@ class MessageLookup extends MessageLookupByLibrary {
         "addYourPhotosNow":
             MessageLookupByLibrary.simpleMessage("Додайте свої фотографії"),
         "addedAs": MessageLookupByLibrary.simpleMessage("Додано як"),
-        "addedBy": m48,
-        "addedSuccessfullyTo": m49,
+        "addedBy": m5,
+        "addedSuccessfullyTo": m6,
         "addingToFavorites":
             MessageLookupByLibrary.simpleMessage("Додавання до обраного..."),
         "advanced": MessageLookupByLibrary.simpleMessage("Додатково"),
@@ -297,7 +294,7 @@ class MessageLookup extends MessageLookupByLibrary {
         "after1Week": MessageLookupByLibrary.simpleMessage("Через 1 тиждень"),
         "after1Year": MessageLookupByLibrary.simpleMessage("Через 1 рік"),
         "albumOwner": MessageLookupByLibrary.simpleMessage("Власник"),
-        "albumParticipantsCount": m1,
+        "albumParticipantsCount": m8,
         "albumTitle": MessageLookupByLibrary.simpleMessage("Назва альбому"),
         "albumUpdated": MessageLookupByLibrary.simpleMessage("Альбом оновлено"),
         "albums": MessageLookupByLibrary.simpleMessage("Альбоми"),
@@ -347,7 +344,7 @@ class MessageLookup extends MessageLookupByLibrary {
             MessageLookupByLibrary.simpleMessage("Блокування застосунку"),
         "appLockDescriptions": MessageLookupByLibrary.simpleMessage(
             "Виберіть між типовим екраном блокування вашого пристрою та власним екраном блокування з PIN-кодом або паролем."),
-        "appVersion": m51,
+        "appVersion": m9,
         "appleId": MessageLookupByLibrary.simpleMessage("Apple ID"),
         "apply": MessageLookupByLibrary.simpleMessage("Застосувати"),
         "applyCodeTitle":
@@ -430,7 +427,7 @@ class MessageLookup extends MessageLookupByLibrary {
         "autoPairDesc": MessageLookupByLibrary.simpleMessage(
             "Автоматичне створення пари працює лише з пристроями, що підтримують Chromecast."),
         "available": MessageLookupByLibrary.simpleMessage("Доступно"),
-        "availableStorageSpace": m52,
+        "availableStorageSpace": m10,
         "backedUpFolders":
             MessageLookupByLibrary.simpleMessage("Резервне копіювання тек"),
         "backup": MessageLookupByLibrary.simpleMessage("Резервне копіювання"),
@@ -449,6 +446,7 @@ class MessageLookup extends MessageLookupByLibrary {
         "backupVideos":
             MessageLookupByLibrary.simpleMessage("Резервне копіювання відео"),
         "birthday": MessageLookupByLibrary.simpleMessage("День народження"),
+        "birthdays": MessageLookupByLibrary.simpleMessage("Birthdays"),
         "blackFridaySale": MessageLookupByLibrary.simpleMessage(
             "Розпродаж у «Чорну п\'ятницю»"),
         "blog": MessageLookupByLibrary.simpleMessage("Блог"),
@@ -467,10 +465,10 @@ class MessageLookup extends MessageLookupByLibrary {
             MessageLookupByLibrary.simpleMessage("Скасувати відновлення"),
         "cancelAccountRecoveryBody": MessageLookupByLibrary.simpleMessage(
             "Ви впевнені, що хочете скасувати відновлення?"),
-        "cancelOtherSubscription": m2,
+        "cancelOtherSubscription": m12,
         "cancelSubscription":
             MessageLookupByLibrary.simpleMessage("Скасувати передплату"),
-        "cannotAddMorePhotosAfterBecomingViewer": m3,
+        "cannotAddMorePhotosAfterBecomingViewer": m13,
         "cannotDeleteSharedFiles": MessageLookupByLibrary.simpleMessage(
             "Не можна видалити спільні файли"),
         "castAlbum": MessageLookupByLibrary.simpleMessage("Транслювати альбом"),
@@ -506,7 +504,7 @@ class MessageLookup extends MessageLookupByLibrary {
             MessageLookupByLibrary.simpleMessage("Отримайте безплатне сховище"),
         "claimMore": MessageLookupByLibrary.simpleMessage("Отримайте більше!"),
         "claimed": MessageLookupByLibrary.simpleMessage("Отримано"),
-        "claimedStorageSoFar": m4,
+        "claimedStorageSoFar": m14,
         "cleanUncategorized":
             MessageLookupByLibrary.simpleMessage("Очистити «Без категорії»"),
         "cleanUncategorizedDescription": MessageLookupByLibrary.simpleMessage(
@@ -517,6 +515,8 @@ class MessageLookup extends MessageLookupByLibrary {
         "click": MessageLookupByLibrary.simpleMessage("• Натисніть"),
         "clickOnTheOverflowMenu": MessageLookupByLibrary.simpleMessage(
             "• Натисніть на меню переповнення"),
+        "clickToInstallOurBestVersionYet": MessageLookupByLibrary.simpleMessage(
+            "Click to install our best version yet"),
         "close": MessageLookupByLibrary.simpleMessage("Закрити"),
         "clubByCaptureTime":
             MessageLookupByLibrary.simpleMessage("Клуб за часом захоплення"),
@@ -536,12 +536,11 @@ class MessageLookup extends MessageLookupByLibrary {
             "Створіть посилання, щоб дозволити людям додавати й переглядати фотографії у вашому спільному альбомі без використання застосунку Ente або облікового запису. Чудово підходить для збору фотографій з подій."),
         "collaborativeLink":
             MessageLookupByLibrary.simpleMessage("Спільне посилання"),
-        "collaborativeLinkCreatedFor": m54,
+        "collaborativeLinkCreatedFor": m15,
         "collaborator": MessageLookupByLibrary.simpleMessage("Співавтор"),
         "collaboratorsCanAddPhotosAndVideosToTheSharedAlbum":
             MessageLookupByLibrary.simpleMessage(
                 "Співавтори можуть додавати фотографії та відео до спільного альбому."),
-        "collaboratorsSuccessfullyAdded": m55,
         "collageLayout": MessageLookupByLibrary.simpleMessage("Макет"),
         "collageSaved":
             MessageLookupByLibrary.simpleMessage("Колаж збережено до галереї"),
@@ -559,7 +558,7 @@ class MessageLookup extends MessageLookupByLibrary {
             "Ви впевнені, що хочете вимкнути двоетапну перевірку?"),
         "confirmAccountDeletion": MessageLookupByLibrary.simpleMessage(
             "Підтвердьте видалення облікового запису"),
-        "confirmAddingTrustedContact": m56,
+        "confirmAddingTrustedContact": m17,
         "confirmDeletePrompt": MessageLookupByLibrary.simpleMessage(
             "Так, я хочу безповоротно видалити цей обліковий запис та його дані з усіх застосунків."),
         "confirmPassword":
@@ -572,10 +571,10 @@ class MessageLookup extends MessageLookupByLibrary {
             "Підтвердіть ваш ключ відновлення"),
         "connectToDevice":
             MessageLookupByLibrary.simpleMessage("Під\'єднатися до пристрою"),
-        "contactFamilyAdmin": m5,
+        "contactFamilyAdmin": m18,
         "contactSupport": MessageLookupByLibrary.simpleMessage(
             "Звернутися до служби підтримки"),
-        "contactToManageSubscription": m6,
+        "contactToManageSubscription": m19,
         "contacts": MessageLookupByLibrary.simpleMessage("Контакти"),
         "contents": MessageLookupByLibrary.simpleMessage("Вміст"),
         "continueLabel": MessageLookupByLibrary.simpleMessage("Продовжити"),
@@ -617,14 +616,12 @@ class MessageLookup extends MessageLookupByLibrary {
         "criticalUpdateAvailable":
             MessageLookupByLibrary.simpleMessage("Доступне важливе оновлення"),
         "crop": MessageLookupByLibrary.simpleMessage("Обрізати"),
-        "curatedMemories":
-            MessageLookupByLibrary.simpleMessage("Curated memories"),
         "currentUsageIs":
             MessageLookupByLibrary.simpleMessage("Поточне використання "),
         "currentlyRunning":
             MessageLookupByLibrary.simpleMessage("зараз працює"),
         "custom": MessageLookupByLibrary.simpleMessage("Власне"),
-        "customEndpoint": m57,
+        "customEndpoint": m20,
         "darkTheme": MessageLookupByLibrary.simpleMessage("Темна"),
         "dayToday": MessageLookupByLibrary.simpleMessage("Сьогодні"),
         "dayYesterday": MessageLookupByLibrary.simpleMessage("Вчора"),
@@ -662,11 +659,11 @@ class MessageLookup extends MessageLookupByLibrary {
             MessageLookupByLibrary.simpleMessage("Видалити з пристрою"),
         "deleteFromEnte":
             MessageLookupByLibrary.simpleMessage("Видалити з Ente"),
-        "deleteItemCount": m7,
+        "deleteItemCount": m21,
         "deleteLocation":
             MessageLookupByLibrary.simpleMessage("Видалити розташування"),
         "deletePhotos": MessageLookupByLibrary.simpleMessage("Видалити фото"),
-        "deleteProgress": m58,
+        "deleteProgress": m22,
         "deleteReason1": MessageLookupByLibrary.simpleMessage(
             "Мені бракує ключової функції"),
         "deleteReason2": MessageLookupByLibrary.simpleMessage(
@@ -705,7 +702,7 @@ class MessageLookup extends MessageLookupByLibrary {
             "Переглядачі все ще можуть робити знімки екрана або зберігати копію ваших фотографій за допомогою зовнішніх інструментів"),
         "disableDownloadWarningTitle":
             MessageLookupByLibrary.simpleMessage("Зверніть увагу"),
-        "disableLinkMessage": m8,
+        "disableLinkMessage": m23,
         "disableTwofactor": MessageLookupByLibrary.simpleMessage(
             "Вимкнути двоетапну перевірку"),
         "disablingTwofactorAuthentication":
@@ -748,9 +745,9 @@ class MessageLookup extends MessageLookupByLibrary {
         "downloadFailed":
             MessageLookupByLibrary.simpleMessage("Не вдалося завантажити"),
         "downloading": MessageLookupByLibrary.simpleMessage("Завантаження..."),
-        "dropSupportEmail": m9,
-        "duplicateFileCountWithStorageSaved": m10,
-        "duplicateItemsGroup": m11,
+        "dropSupportEmail": m24,
+        "duplicateFileCountWithStorageSaved": m25,
+        "duplicateItemsGroup": m26,
         "edit": MessageLookupByLibrary.simpleMessage("Редагувати"),
         "editLocation":
             MessageLookupByLibrary.simpleMessage("Змінити розташування"),
@@ -764,8 +761,8 @@ class MessageLookup extends MessageLookupByLibrary {
         "eligible": MessageLookupByLibrary.simpleMessage("придатний"),
         "email":
             MessageLookupByLibrary.simpleMessage("Адреса електронної пошти"),
-        "emailChangedTo": m59,
-        "emailNoEnteAccount": m12,
+        "emailChangedTo": m28,
+        "emailNoEnteAccount": m30,
         "emailVerificationToggle":
             MessageLookupByLibrary.simpleMessage("Підтвердження через пошту"),
         "emailYourLogs": MessageLookupByLibrary.simpleMessage(
@@ -847,7 +844,7 @@ class MessageLookup extends MessageLookupByLibrary {
             MessageLookupByLibrary.simpleMessage("Експортувати дані"),
         "extraPhotosFound": MessageLookupByLibrary.simpleMessage(
             "Знайдено додаткові фотографії"),
-        "extraPhotosFoundFor": m62,
+        "extraPhotosFoundFor": m32,
         "faceNotClusteredYet": MessageLookupByLibrary.simpleMessage(
             "Обличчя ще не згруповані, поверніться пізніше"),
         "faceRecognition":
@@ -897,8 +894,8 @@ class MessageLookup extends MessageLookupByLibrary {
         "fileTypes": MessageLookupByLibrary.simpleMessage("Типи файлів"),
         "fileTypesAndNames":
             MessageLookupByLibrary.simpleMessage("Типи та назви файлів"),
-        "filesBackedUpFromDevice": m64,
-        "filesBackedUpInAlbum": m65,
+        "filesBackedUpFromDevice": m34,
+        "filesBackedUpInAlbum": m35,
         "filesDeleted": MessageLookupByLibrary.simpleMessage("Файли видалено"),
         "filesSavedToGallery":
             MessageLookupByLibrary.simpleMessage("Файли збережено до галереї"),
@@ -914,13 +911,13 @@ class MessageLookup extends MessageLookupByLibrary {
         "foundFaces": MessageLookupByLibrary.simpleMessage("Знайдені обличчя"),
         "freeStorageClaimed":
             MessageLookupByLibrary.simpleMessage("Безплатне сховище отримано"),
-        "freeStorageOnReferralSuccess": m13,
+        "freeStorageOnReferralSuccess": m36,
         "freeStorageUsable": MessageLookupByLibrary.simpleMessage(
             "Безплатне сховище можна використовувати"),
         "freeTrial":
             MessageLookupByLibrary.simpleMessage("Безплатний пробний період"),
-        "freeTrialValidTill": m14,
-        "freeUpAmount": m67,
+        "freeTrialValidTill": m37,
+        "freeUpAmount": m39,
         "freeUpDeviceSpace":
             MessageLookupByLibrary.simpleMessage("Звільніть місце на пристрої"),
         "freeUpDeviceSpaceDesc": MessageLookupByLibrary.simpleMessage(
@@ -931,7 +928,7 @@ class MessageLookup extends MessageLookupByLibrary {
         "general": MessageLookupByLibrary.simpleMessage("Загальні"),
         "generatingEncryptionKeys": MessageLookupByLibrary.simpleMessage(
             "Створення ключів шифрування..."),
-        "genericProgress": m69,
+        "genericProgress": m41,
         "goToSettings":
             MessageLookupByLibrary.simpleMessage("Перейти до налаштувань"),
         "googlePlayId": MessageLookupByLibrary.simpleMessage("Google Play ID"),
@@ -944,6 +941,8 @@ class MessageLookup extends MessageLookupByLibrary {
         "guestView": MessageLookupByLibrary.simpleMessage("Гостьовий перегляд"),
         "guestViewEnablePreSteps": MessageLookupByLibrary.simpleMessage(
             "Щоб увімкнути гостьовий перегляд, встановіть пароль або блокування екрана в налаштуваннях системи."),
+        "happyBirthday":
+            MessageLookupByLibrary.simpleMessage("Happy birthday! 🥳"),
         "hearUsExplanation": MessageLookupByLibrary.simpleMessage(
             "Ми не відстежуємо встановлення застосунку. Але, якщо ви скажете нам, де ви нас знайшли, це допоможе!"),
         "hearUsWhereTitle": MessageLookupByLibrary.simpleMessage(
@@ -1012,7 +1011,7 @@ class MessageLookup extends MessageLookupByLibrary {
         "itLooksLikeSomethingWentWrongPleaseRetryAfterSome":
             MessageLookupByLibrary.simpleMessage(
                 "Схоже, що щось пішло не так. Спробуйте ще раз через деякий час. Якщо помилка не зникне, зв\'яжіться з нашою командою підтримки."),
-        "itemCount": m15,
+        "itemCount": m43,
         "itemsShowTheNumberOfDaysRemainingBeforePermanentDeletion":
             MessageLookupByLibrary.simpleMessage(
                 "Елементи показують кількість днів, що залишилися до остаточного видалення"),
@@ -1036,7 +1035,7 @@ class MessageLookup extends MessageLookupByLibrary {
         "legacy": MessageLookupByLibrary.simpleMessage("Спадок"),
         "legacyAccounts":
             MessageLookupByLibrary.simpleMessage("Облікові записи «Спадку»"),
-        "legacyInvite": m72,
+        "legacyInvite": m45,
         "legacyPageDesc": MessageLookupByLibrary.simpleMessage(
             "«Спадок» дозволяє довіреним контактам отримати доступ до вашого облікового запису під час вашої відсутності."),
         "legacyPageDesc2": MessageLookupByLibrary.simpleMessage(
@@ -1049,7 +1048,7 @@ class MessageLookup extends MessageLookupByLibrary {
             MessageLookupByLibrary.simpleMessage("Досягнуто ліміту пристроїв"),
         "linkEnabled": MessageLookupByLibrary.simpleMessage("Увімкнено"),
         "linkExpired": MessageLookupByLibrary.simpleMessage("Закінчився"),
-        "linkExpiresOn": m16,
+        "linkExpiresOn": m46,
         "linkExpiry": MessageLookupByLibrary.simpleMessage(
             "Термін дії посилання закінчився"),
         "linkHasExpired":
@@ -1058,8 +1057,6 @@ class MessageLookup extends MessageLookupByLibrary {
         "livePhotos": MessageLookupByLibrary.simpleMessage("Живі фото"),
         "loadMessage1": MessageLookupByLibrary.simpleMessage(
             "Ви можете поділитися своєю передплатою з родиною"),
-        "loadMessage2": MessageLookupByLibrary.simpleMessage(
-            "На цей час ми зберегли понад 30 мільйонів спогадів"),
         "loadMessage3": MessageLookupByLibrary.simpleMessage(
             "Ми зберігаємо 3 копії ваших даних, одну в підземному бункері"),
         "loadMessage4": MessageLookupByLibrary.simpleMessage(
@@ -1117,6 +1114,8 @@ class MessageLookup extends MessageLookupByLibrary {
                 "Довго утримуйте поштову адресу, щоб перевірити наскрізне шифрування."),
         "longpressOnAnItemToViewInFullscreen": MessageLookupByLibrary.simpleMessage(
             "Натисніть і утримуйте елемент для перегляду в повноекранному режимі"),
+        "lookBackOnYourMemories": MessageLookupByLibrary.simpleMessage(
+            "Look back on your memories 🌄"),
         "loopVideoOff":
             MessageLookupByLibrary.simpleMessage("Вимкнено зациклювання відео"),
         "loopVideoOn": MessageLookupByLibrary.simpleMessage(
@@ -1179,7 +1178,7 @@ class MessageLookup extends MessageLookupByLibrary {
             MessageLookupByLibrary.simpleMessage("Перемістити до альбому"),
         "moveToHiddenAlbum": MessageLookupByLibrary.simpleMessage(
             "Перемістити до прихованого альбому"),
-        "movedSuccessfullyTo": m77,
+        "movedSuccessfullyTo": m51,
         "movedToTrash":
             MessageLookupByLibrary.simpleMessage("Переміщено у смітник"),
         "movingFilesToAlbum": MessageLookupByLibrary.simpleMessage(
@@ -1195,6 +1194,7 @@ class MessageLookup extends MessageLookupByLibrary {
         "newLocation":
             MessageLookupByLibrary.simpleMessage("Нове розташування"),
         "newPerson": MessageLookupByLibrary.simpleMessage("Нова особа"),
+        "newPhotosEmoji": MessageLookupByLibrary.simpleMessage(" new 📸"),
         "newToEnte": MessageLookupByLibrary.simpleMessage("Уперше на Ente"),
         "newest": MessageLookupByLibrary.simpleMessage("Найновіші"),
         "next": MessageLookupByLibrary.simpleMessage("Далі"),
@@ -1231,10 +1231,10 @@ class MessageLookup extends MessageLookupByLibrary {
         "noResults": MessageLookupByLibrary.simpleMessage("Немає результатів"),
         "noResultsFound":
             MessageLookupByLibrary.simpleMessage("Нічого не знайдено"),
-        "noSuggestionsForPerson": m78,
+        "noSuggestionsForPerson": m52,
         "noSystemLockFound": MessageLookupByLibrary.simpleMessage(
             "Не знайдено системного блокування"),
-        "notPersonLabel": m79,
+        "notPersonLabel": m53,
         "nothingSharedWithYouYet": MessageLookupByLibrary.simpleMessage(
             "Поки що з вами ніхто не поділився"),
         "nothingToSeeHere": MessageLookupByLibrary.simpleMessage(
@@ -1244,7 +1244,10 @@ class MessageLookup extends MessageLookupByLibrary {
         "onDevice": MessageLookupByLibrary.simpleMessage("На пристрої"),
         "onEnte":
             MessageLookupByLibrary.simpleMessage("В <branding>Ente</branding>"),
-        "onlyFamilyAdminCanChangeCode": m17,
+        "onThisDay": MessageLookupByLibrary.simpleMessage("On this day"),
+        "onThisDayNotificationExplanation": MessageLookupByLibrary.simpleMessage(
+            "Receive reminders about memories from this day in previous years."),
+        "onlyFamilyAdminCanChangeCode": m54,
         "onlyThem": MessageLookupByLibrary.simpleMessage("Тільки вони"),
         "oops": MessageLookupByLibrary.simpleMessage("От халепа"),
         "oopsCouldNotSaveEdits": MessageLookupByLibrary.simpleMessage(
@@ -1284,7 +1287,7 @@ class MessageLookup extends MessageLookupByLibrary {
             MessageLookupByLibrary.simpleMessage("Пароль успішно змінено"),
         "passwordLock":
             MessageLookupByLibrary.simpleMessage("Блокування паролем"),
-        "passwordStrength": m18,
+        "passwordStrength": m56,
         "passwordStrengthInfo": MessageLookupByLibrary.simpleMessage(
             "Надійність пароля розраховується з урахуванням довжини пароля, використаних символів, а також того, чи входить пароль у топ 10 000 найбільш використовуваних паролів"),
         "passwordWarning": MessageLookupByLibrary.simpleMessage(
@@ -1295,7 +1298,7 @@ class MessageLookup extends MessageLookupByLibrary {
             MessageLookupByLibrary.simpleMessage("Не вдалося оплатити"),
         "paymentFailedMessage": MessageLookupByLibrary.simpleMessage(
             "На жаль, ваш платіж не вдався. Зв\'яжіться зі службою підтримки і ми вам допоможемо!"),
-        "paymentFailedTalkToProvider": m19,
+        "paymentFailedTalkToProvider": m57,
         "pendingItems":
             MessageLookupByLibrary.simpleMessage("Елементи на розгляді"),
         "pendingSync":
@@ -1325,7 +1328,7 @@ class MessageLookup extends MessageLookupByLibrary {
         "pinLock": MessageLookupByLibrary.simpleMessage("Блокування PIN-кодом"),
         "playOnTv":
             MessageLookupByLibrary.simpleMessage("Відтворити альбом на ТБ"),
-        "playStoreFreeTrialValidTill": m20,
+        "playStoreFreeTrialValidTill": m62,
         "playstoreSubscription":
             MessageLookupByLibrary.simpleMessage("Передплата Play Store"),
         "pleaseCheckYourInternetConnectionAndTryAgain":
@@ -1337,14 +1340,14 @@ class MessageLookup extends MessageLookupByLibrary {
         "pleaseContactSupportIfTheProblemPersists":
             MessageLookupByLibrary.simpleMessage(
                 "Зверніться до служби підтримки, якщо проблема не зникне"),
-        "pleaseEmailUsAt": m85,
+        "pleaseEmailUsAt": m63,
         "pleaseGrantPermissions":
             MessageLookupByLibrary.simpleMessage("Надайте дозволи"),
         "pleaseLoginAgain":
             MessageLookupByLibrary.simpleMessage("Увійдіть знову"),
         "pleaseSelectQuickLinksToRemove": MessageLookupByLibrary.simpleMessage(
             "Виберіть посилання для видалення"),
-        "pleaseSendTheLogsTo": m86,
+        "pleaseSendTheLogsTo": m64,
         "pleaseTryAgain":
             MessageLookupByLibrary.simpleMessage("Спробуйте ще раз"),
         "pleaseVerifyTheCodeYouHaveEntered":
@@ -1371,7 +1374,7 @@ class MessageLookup extends MessageLookupByLibrary {
         "privateSharing":
             MessageLookupByLibrary.simpleMessage("Приватне поширення"),
         "proceed": MessageLookupByLibrary.simpleMessage("Продовжити"),
-        "processingImport": m88,
+        "processingImport": m66,
         "publicLinkCreated":
             MessageLookupByLibrary.simpleMessage("Публічне посилання створено"),
         "publicLinkEnabled": MessageLookupByLibrary.simpleMessage(
@@ -1382,7 +1385,9 @@ class MessageLookup extends MessageLookupByLibrary {
         "rateTheApp":
             MessageLookupByLibrary.simpleMessage("Оцініть застосунок"),
         "rateUs": MessageLookupByLibrary.simpleMessage("Оцініть нас"),
-        "rateUsOnStore": m21,
+        "rateUsOnStore": m67,
+        "receiveRemindersOnBirthdays": MessageLookupByLibrary.simpleMessage(
+            "Receive reminders when it\'s someone\'s birthday. Tapping on the notification will take you to photos of the birthday person."),
         "recover": MessageLookupByLibrary.simpleMessage("Відновити"),
         "recoverAccount":
             MessageLookupByLibrary.simpleMessage("Відновити обліковий запис"),
@@ -1391,7 +1396,7 @@ class MessageLookup extends MessageLookupByLibrary {
             MessageLookupByLibrary.simpleMessage("Відновити обліковий запис"),
         "recoveryInitiated":
             MessageLookupByLibrary.simpleMessage("Почато відновлення"),
-        "recoveryInitiatedDesc": m90,
+        "recoveryInitiatedDesc": m69,
         "recoveryKey": MessageLookupByLibrary.simpleMessage("Ключ відновлення"),
         "recoveryKeyCopiedToClipboard": MessageLookupByLibrary.simpleMessage(
             "Ключ відновлення скопійовано в буфер обміну"),
@@ -1405,12 +1410,12 @@ class MessageLookup extends MessageLookupByLibrary {
             MessageLookupByLibrary.simpleMessage("Ключ відновлення перевірено"),
         "recoveryKeyVerifyReason": MessageLookupByLibrary.simpleMessage(
             "Ключ відновлення — це єдиний спосіб відновити фотографії, якщо ви забули пароль. Ви можете знайти свій ключ в розділі «Налаштування» > «Обліковий запис».\n\nВведіть ключ відновлення тут, щоб перевірити, чи правильно ви його зберегли."),
-        "recoveryReady": m91,
+        "recoveryReady": m70,
         "recoverySuccessful":
             MessageLookupByLibrary.simpleMessage("Відновлення успішне!"),
         "recoveryWarning": MessageLookupByLibrary.simpleMessage(
             "Довірений контакт намагається отримати доступ до вашого облікового запису"),
-        "recoveryWarningBody": m92,
+        "recoveryWarningBody": m71,
         "recreatePasswordBody": MessageLookupByLibrary.simpleMessage(
             "Ваш пристрій недостатньо потужний для перевірки пароля, але ми можемо відновити його таким чином, щоб він працював на всіх пристроях.\n\nУвійдіть за допомогою ключа відновлення та відновіть свій пароль (за бажанням ви можете використати той самий ключ знову)."),
         "recreatePasswordTitle":
@@ -1426,7 +1431,7 @@ class MessageLookup extends MessageLookupByLibrary {
             MessageLookupByLibrary.simpleMessage("1. Дайте цей код друзям"),
         "referralStep2": MessageLookupByLibrary.simpleMessage(
             "2. Вони оформлюють передплату"),
-        "referralStep3": m22,
+        "referralStep3": m72,
         "referrals": MessageLookupByLibrary.simpleMessage("Реферали"),
         "referralsAreCurrentlyPaused":
             MessageLookupByLibrary.simpleMessage("Реферали зараз призупинені"),
@@ -1458,7 +1463,7 @@ class MessageLookup extends MessageLookupByLibrary {
             MessageLookupByLibrary.simpleMessage("Вилучити посилання"),
         "removeParticipant":
             MessageLookupByLibrary.simpleMessage("Видалити учасника"),
-        "removeParticipantBody": m23,
+        "removeParticipantBody": m73,
         "removePersonLabel":
             MessageLookupByLibrary.simpleMessage("Видалити мітку особи"),
         "removePublicLink":
@@ -1480,7 +1485,7 @@ class MessageLookup extends MessageLookupByLibrary {
             MessageLookupByLibrary.simpleMessage("Перейменувати файл"),
         "renewSubscription":
             MessageLookupByLibrary.simpleMessage("Поновити передплату"),
-        "renewsOn": m24,
+        "renewsOn": m74,
         "reportABug":
             MessageLookupByLibrary.simpleMessage("Повідомити про помилку"),
         "reportBug":
@@ -1560,8 +1565,8 @@ class MessageLookup extends MessageLookupByLibrary {
             "Запросіть людей, і ви побачите всі фотографії, якими вони поділилися, тут"),
         "searchPersonsEmptySection": MessageLookupByLibrary.simpleMessage(
             "Люди будуть показані тут після завершення оброблення та синхронізації"),
-        "searchResultCount": m94,
-        "searchSectionsLengthMismatch": m95,
+        "searchResultCount": m76,
+        "searchSectionsLengthMismatch": m77,
         "security": MessageLookupByLibrary.simpleMessage("Безпека"),
         "seePublicAlbumLinksInApp": MessageLookupByLibrary.simpleMessage(
             "Посилання на публічні альбоми в застосунку"),
@@ -1593,8 +1598,8 @@ class MessageLookup extends MessageLookupByLibrary {
         "selectedItemsWillBeDeletedFromAllAlbumsAndMoved":
             MessageLookupByLibrary.simpleMessage(
                 "Вибрані елементи будуть видалені з усіх альбомів і переміщені в смітник."),
-        "selectedPhotos": m25,
-        "selectedPhotosWithYours": m26,
+        "selectedPhotos": m78,
+        "selectedPhotosWithYours": m79,
         "send": MessageLookupByLibrary.simpleMessage("Надіслати"),
         "sendEmail": MessageLookupByLibrary.simpleMessage(
             "Надіслати електронного листа"),
@@ -1631,16 +1636,16 @@ class MessageLookup extends MessageLookupByLibrary {
             MessageLookupByLibrary.simpleMessage("Поділитися альбомом зараз"),
         "shareLink":
             MessageLookupByLibrary.simpleMessage("Поділитися посиланням"),
-        "shareMyVerificationID": m27,
+        "shareMyVerificationID": m81,
         "shareOnlyWithThePeopleYouWant": MessageLookupByLibrary.simpleMessage(
             "Поділіться тільки з тими людьми, якими ви хочете"),
-        "shareTextConfirmOthersVerificationID": m28,
+        "shareTextConfirmOthersVerificationID": m82,
         "shareTextRecommendUsingEnte": MessageLookupByLibrary.simpleMessage(
             "Завантажте Ente для того, щоб легко поділитися фотографіями оригінальної якості та відео\n\nhttps://ente.io"),
-        "shareTextReferralCode": m29,
+        "shareTextReferralCode": m83,
         "shareWithNonenteUsers": MessageLookupByLibrary.simpleMessage(
             "Поділитися з користувачами без Ente"),
-        "shareWithPeopleSectionTitle": m30,
+        "shareWithPeopleSectionTitle": m84,
         "shareYourFirstAlbum": MessageLookupByLibrary.simpleMessage(
             "Поділитися вашим першим альбомом"),
         "sharedAlbumSectionDescription": MessageLookupByLibrary.simpleMessage(
@@ -1651,7 +1656,7 @@ class MessageLookup extends MessageLookupByLibrary {
             MessageLookupByLibrary.simpleMessage("Нові спільні фотографії"),
         "sharedPhotoNotificationsExplanation": MessageLookupByLibrary.simpleMessage(
             "Отримувати сповіщення, коли хтось додасть фото до спільного альбому, в якому ви перебуваєте"),
-        "sharedWith": m97,
+        "sharedWith": m85,
         "sharedWithMe":
             MessageLookupByLibrary.simpleMessage("Поділитися зі мною"),
         "sharedWithYou":
@@ -1668,11 +1673,11 @@ class MessageLookup extends MessageLookupByLibrary {
             MessageLookupByLibrary.simpleMessage("Вийти на інших пристроях"),
         "signUpTerms": MessageLookupByLibrary.simpleMessage(
             "Я приймаю <u-terms>умови використання</u-terms> і <u-policy>політику приватності</u-policy>"),
-        "singleFileDeleteFromDevice": m31,
+        "singleFileDeleteFromDevice": m86,
         "singleFileDeleteHighlight": MessageLookupByLibrary.simpleMessage(
             "Воно буде видалено з усіх альбомів."),
-        "singleFileInBothLocalAndRemote": m32,
-        "singleFileInRemoteOnly": m33,
+        "singleFileInBothLocalAndRemote": m87,
+        "singleFileInRemoteOnly": m88,
         "skip": MessageLookupByLibrary.simpleMessage("Пропустити"),
         "social": MessageLookupByLibrary.simpleMessage("Соцмережі"),
         "someItemsAreInBothEnteAndYourDevice":
@@ -1701,6 +1706,8 @@ class MessageLookup extends MessageLookupByLibrary {
         "sorryWeCouldNotGenerateSecureKeysOnThisDevicennplease":
             MessageLookupByLibrary.simpleMessage(
                 "На жаль, на цьому пристрої не вдалося створити безпечні ключі.\n\nЗареєструйтесь з іншого пристрою."),
+        "sorryWeHadToPauseYourBackups": MessageLookupByLibrary.simpleMessage(
+            "Sorry, we had to pause your backups"),
         "sort": MessageLookupByLibrary.simpleMessage("Сортувати"),
         "sortAlbumsBy": MessageLookupByLibrary.simpleMessage("Сортувати за"),
         "sortNewestFirst":
@@ -1720,13 +1727,13 @@ class MessageLookup extends MessageLookupByLibrary {
         "storage": MessageLookupByLibrary.simpleMessage("Сховище"),
         "storageBreakupFamily": MessageLookupByLibrary.simpleMessage("Сім\'я"),
         "storageBreakupYou": MessageLookupByLibrary.simpleMessage("Ви"),
-        "storageInGB": m34,
+        "storageInGB": m91,
         "storageLimitExceeded":
             MessageLookupByLibrary.simpleMessage("Перевищено ліміт сховища"),
-        "storageUsageInfo": m100,
+        "storageUsageInfo": m92,
         "strongStrength": MessageLookupByLibrary.simpleMessage("Надійний"),
-        "subAlreadyLinkedErrMessage": m35,
-        "subWillBeCancelledOn": m36,
+        "subAlreadyLinkedErrMessage": m93,
+        "subWillBeCancelledOn": m94,
         "subscribe": MessageLookupByLibrary.simpleMessage("Передплачувати"),
         "subscribeToEnableSharing": MessageLookupByLibrary.simpleMessage(
             "Вам потрібна активна передплата, щоб увімкнути спільне поширення."),
@@ -1743,7 +1750,7 @@ class MessageLookup extends MessageLookupByLibrary {
         "suggestFeatures":
             MessageLookupByLibrary.simpleMessage("Запропонувати нові функції"),
         "support": MessageLookupByLibrary.simpleMessage("Підтримка"),
-        "syncProgress": m101,
+        "syncProgress": m95,
         "syncStopped":
             MessageLookupByLibrary.simpleMessage("Синхронізацію зупинено"),
         "syncing": MessageLookupByLibrary.simpleMessage("Синхронізуємо..."),
@@ -1756,7 +1763,7 @@ class MessageLookup extends MessageLookupByLibrary {
             "Торкніться, щоби розблокувати"),
         "tapToUpload":
             MessageLookupByLibrary.simpleMessage("Натисніть, щоб завантажити"),
-        "tapToUploadIsIgnoredDue": m102,
+        "tapToUploadIsIgnoredDue": m96,
         "tempErrorContactSupportIfPersists": MessageLookupByLibrary.simpleMessage(
             "Схоже, що щось пішло не так. Спробуйте ще раз через деякий час. Якщо помилка не зникне, зв\'яжіться з нашою командою підтримки."),
         "terminate": MessageLookupByLibrary.simpleMessage("Припинити"),
@@ -1779,7 +1786,7 @@ class MessageLookup extends MessageLookupByLibrary {
         "theseItemsWillBeDeletedFromYourDevice":
             MessageLookupByLibrary.simpleMessage(
                 "Ці елементи будуть видалені з пристрою."),
-        "theyAlsoGetXGb": m37,
+        "theyAlsoGetXGb": m97,
         "theyWillBeDeletedFromAllAlbums": MessageLookupByLibrary.simpleMessage(
             "Вони будуть видалені з усіх альбомів."),
         "thisActionCannotBeUndone": MessageLookupByLibrary.simpleMessage(
@@ -1795,7 +1802,7 @@ class MessageLookup extends MessageLookupByLibrary {
             "Ця поштова адреса вже використовується"),
         "thisImageHasNoExifData": MessageLookupByLibrary.simpleMessage(
             "Це зображення не має даних exif"),
-        "thisIsPersonVerificationId": m38,
+        "thisIsPersonVerificationId": m98,
         "thisIsYourVerificationId": MessageLookupByLibrary.simpleMessage(
             "Це ваш Ідентифікатор підтвердження"),
         "thisWillLogYouOutOfTheFollowingDevice":
@@ -1820,11 +1827,11 @@ class MessageLookup extends MessageLookupByLibrary {
         "total": MessageLookupByLibrary.simpleMessage("всього"),
         "totalSize": MessageLookupByLibrary.simpleMessage("Загальний розмір"),
         "trash": MessageLookupByLibrary.simpleMessage("Смітник"),
-        "trashDaysLeft": m105,
+        "trashDaysLeft": m101,
         "trim": MessageLookupByLibrary.simpleMessage("Вирізати"),
         "trustedContacts":
             MessageLookupByLibrary.simpleMessage("Довірені контакти"),
-        "trustedInviteBody": m108,
+        "trustedInviteBody": m104,
         "tryAgain": MessageLookupByLibrary.simpleMessage("Спробувати знову"),
         "turnOnBackupForAutoUpload": MessageLookupByLibrary.simpleMessage(
             "Увімкніть резервну копію для автоматичного завантаження файлів, доданих до теки пристрою в Ente."),
@@ -1842,7 +1849,7 @@ class MessageLookup extends MessageLookupByLibrary {
                 "Двоетапну перевірку успішно скинуто"),
         "twofactorSetup": MessageLookupByLibrary.simpleMessage(
             "Налаштування двоетапної перевірки"),
-        "typeOfGallerGallerytypeIsNotSupportedForRename": m109,
+        "typeOfGallerGallerytypeIsNotSupportedForRename": m105,
         "unarchive": MessageLookupByLibrary.simpleMessage("Розархівувати"),
         "unarchiveAlbum":
             MessageLookupByLibrary.simpleMessage("Розархівувати альбом"),
@@ -1865,10 +1872,10 @@ class MessageLookup extends MessageLookupByLibrary {
         "updatingFolderSelection":
             MessageLookupByLibrary.simpleMessage("Оновлення вибору теки..."),
         "upgrade": MessageLookupByLibrary.simpleMessage("Покращити"),
-        "uploadIsIgnoredDueToIgnorereason": m110,
+        "uploadIsIgnoredDueToIgnorereason": m106,
         "uploadingFilesToAlbum": MessageLookupByLibrary.simpleMessage(
             "Завантажуємо файли до альбому..."),
-        "uploadingMultipleMemories": m111,
+        "uploadingMultipleMemories": m107,
         "uploadingSingleMemory":
             MessageLookupByLibrary.simpleMessage("Зберігаємо 1 спогад..."),
         "upto50OffUntil4thDec":
@@ -1887,7 +1894,7 @@ class MessageLookup extends MessageLookupByLibrary {
         "useSelectedPhoto":
             MessageLookupByLibrary.simpleMessage("Використати вибране фото"),
         "usedSpace": MessageLookupByLibrary.simpleMessage("Використано місця"),
-        "validTill": m39,
+        "validTill": m108,
         "verificationFailedPleaseTryAgain":
             MessageLookupByLibrary.simpleMessage(
                 "Перевірка не вдалася, спробуйте ще раз"),
@@ -1896,7 +1903,7 @@ class MessageLookup extends MessageLookupByLibrary {
         "verify": MessageLookupByLibrary.simpleMessage("Підтвердити"),
         "verifyEmail":
             MessageLookupByLibrary.simpleMessage("Підтвердити пошту"),
-        "verifyEmailID": m40,
+        "verifyEmailID": m109,
         "verifyIDLabel": MessageLookupByLibrary.simpleMessage("Підтвердження"),
         "verifyPasskey":
             MessageLookupByLibrary.simpleMessage("Підтвердити ключ доступу"),
@@ -1935,7 +1942,7 @@ class MessageLookup extends MessageLookupByLibrary {
         "weDontSupportEditingPhotosAndAlbumsThatYouDont":
             MessageLookupByLibrary.simpleMessage(
                 "Ми не підтримуємо редагування фотографій та альбомів, якими ви ще не володієте"),
-        "weHaveSendEmailTo": m41,
+        "weHaveSendEmailTo": m112,
         "weakStrength": MessageLookupByLibrary.simpleMessage("Слабкий"),
         "welcomeBack": MessageLookupByLibrary.simpleMessage("З поверненням!"),
         "whatsNew": MessageLookupByLibrary.simpleMessage("Що нового"),
@@ -1943,7 +1950,7 @@ class MessageLookup extends MessageLookupByLibrary {
             "Довірений контакт може допомогти у відновленні ваших даних."),
         "yearShort": MessageLookupByLibrary.simpleMessage("рік"),
         "yearly": MessageLookupByLibrary.simpleMessage("Щороку"),
-        "yearsAgo": m42,
+        "yearsAgo": m113,
         "yes": MessageLookupByLibrary.simpleMessage("Так"),
         "yesCancel": MessageLookupByLibrary.simpleMessage("Так, скасувати"),
         "yesConvertToViewer":
@@ -1976,7 +1983,7 @@ class MessageLookup extends MessageLookupByLibrary {
             "Ви не можете поділитися із собою"),
         "youDontHaveAnyArchivedItems": MessageLookupByLibrary.simpleMessage(
             "У вас немає жодних архівних елементів."),
-        "youHaveSuccessfullyFreedUp": m43,
+        "youHaveSuccessfullyFreedUp": m115,
         "yourAccountHasBeenDeleted": MessageLookupByLibrary.simpleMessage(
             "Ваш обліковий запис видалено"),
         "yourMap": MessageLookupByLibrary.simpleMessage("Ваша мапа"),

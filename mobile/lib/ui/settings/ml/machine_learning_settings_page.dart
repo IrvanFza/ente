@@ -12,6 +12,7 @@ import "package:photos/services/machine_learning/semantic_search/clip/clip_image
 import "package:photos/services/machine_learning/semantic_search/clip/clip_text_encoder.dart";
 import 'package:photos/services/machine_learning/semantic_search/semantic_search_service.dart';
 import "package:photos/services/remote_assets_service.dart";
+import "package:photos/services/wake_lock_service.dart";
 import "package:photos/theme/ente_theme.dart";
 import "package:photos/ui/common/loading_widget.dart";
 import "package:photos/ui/common/web_page.dart";
@@ -31,7 +32,6 @@ import "package:photos/ui/settings/ml/enable_ml_consent.dart";
 import "package:photos/ui/settings/ml/ml_user_dev_screen.dart";
 import "package:photos/utils/ml_util.dart";
 import "package:photos/utils/network_util.dart";
-import "package:photos/utils/wakelock_util.dart";
 
 class MachineLearningSettingsPage extends StatefulWidget {
   const MachineLearningSettingsPage({super.key});
@@ -43,7 +43,6 @@ class MachineLearningSettingsPage extends StatefulWidget {
 
 class _MachineLearningSettingsPageState
     extends State<MachineLearningSettingsPage> {
-  final EnteWakeLock _wakeLock = EnteWakeLock();
   Timer? _timer;
   int _titleTapCount = 0;
   Timer? _advancedOptionsTimer;
@@ -51,8 +50,11 @@ class _MachineLearningSettingsPageState
   @override
   void initState() {
     super.initState();
-    _wakeLock.enable();
-    machineLearningController.forceOverrideML(turnOn: true);
+    EnteWakeLockService.instance.updateWakeLock(
+      enable: true,
+      wakeLockFor: WakeLockFor.machineLearningSettingsScreen,
+    );
+    computeController.forceOverrideML(turnOn: true);
     if (!MLIndexingIsolate.instance.areModelsDownloaded) {
       _timer = Timer.periodic(const Duration(seconds: 10), (timer) {
         if (mounted) {
@@ -68,8 +70,11 @@ class _MachineLearningSettingsPageState
   @override
   void dispose() {
     super.dispose();
-    _wakeLock.disable();
-    machineLearningController.forceOverrideML(turnOn: false);
+    EnteWakeLockService.instance.updateWakeLock(
+      enable: false,
+      wakeLockFor: WakeLockFor.machineLearningSettingsScreen,
+    );
+    computeController.forceOverrideML(turnOn: false);
     _timer?.cancel();
     _advancedOptionsTimer?.cancel();
   }
@@ -424,13 +429,13 @@ class MLStatusWidget extends StatefulWidget {
 
 class MLStatusWidgetState extends State<MLStatusWidget> {
   Timer? _timer;
-  bool _isDeviceHealthy = machineLearningController.isDeviceHealthy;
+  bool _isDeviceHealthy = computeController.isDeviceHealthy;
   @override
   void initState() {
     super.initState();
     _timer = Timer.periodic(const Duration(seconds: 10), (timer) {
       MLService.instance.triggerML();
-      _isDeviceHealthy = machineLearningController.isDeviceHealthy;
+      _isDeviceHealthy = computeController.isDeviceHealthy;
       setState(() {});
     });
   }

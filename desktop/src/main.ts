@@ -78,6 +78,14 @@ export const allowWindowClose = (): void => {
  * We call this at the end of this file.
  */
 const main = () => {
+    // Workaround for Electron 36 not launching on some Linux distros. Remove
+    // once fixed or otherwise mitigated upstream.
+    //
+    // https://github.com/electron/electron/issues/46538#issuecomment-2808806722
+    if (process.platform == "linux") {
+        app.commandLine.appendSwitch("gtk-version", "3");
+    }
+
     const gotTheLock = app.requestSingleInstanceLock();
     if (!gotTheLock) {
         app.quit();
@@ -423,7 +431,14 @@ const createMainWindow = () => {
     window.on("hide", () => {
         // On macOS, when hiding the window also hide the app's icon in the dock
         // unless the user has unchecked the Settings > Hide dock icon checkbox.
-        if (shouldHideDockIcon()) app.dock?.hide();
+        if (shouldHideDockIcon()) {
+            // macOS emits a window "hide" event when going fullscreen, and if
+            // we hide the dock icon there then the window disappears. So ignore
+            // this scenario.
+            if (!window.isFullScreen()) {
+                app.dock?.hide();
+            }
+        }
     });
 
     window.on("show", () => void app.dock?.show());

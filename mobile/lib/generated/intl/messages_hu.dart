@@ -26,9 +26,10 @@ class MessageLookup extends MessageLookupByLibrary {
             MessageLookupByLibrary.simpleMessage("Köszöntjük ismét!"),
         "askDeleteReason":
             MessageLookupByLibrary.simpleMessage("Miért törli a fiókját?"),
+        "birthdays": MessageLookupByLibrary.simpleMessage("Birthdays"),
         "cancel": MessageLookupByLibrary.simpleMessage("Mégse"),
-        "curatedMemories":
-            MessageLookupByLibrary.simpleMessage("Curated memories"),
+        "clickToInstallOurBestVersionYet": MessageLookupByLibrary.simpleMessage(
+            "Click to install our best version yet"),
         "deleteAccount": MessageLookupByLibrary.simpleMessage("Fiók törlése"),
         "deleteAccountFeedbackPrompt": MessageLookupByLibrary.simpleMessage(
             "Sajnáljuk, hogy távozik. Kérjük, ossza meg velünk visszajelzéseit, hogy segítsen nekünk a fejlődésben."),
@@ -38,8 +39,20 @@ class MessageLookup extends MessageLookupByLibrary {
         "enterYourEmailAddress":
             MessageLookupByLibrary.simpleMessage("Adja meg az e-mail címét"),
         "feedback": MessageLookupByLibrary.simpleMessage("Visszajelzés"),
+        "happyBirthday":
+            MessageLookupByLibrary.simpleMessage("Happy birthday! 🥳"),
         "invalidEmailAddress":
             MessageLookupByLibrary.simpleMessage("Érvénytelen e-mail cím"),
+        "lookBackOnYourMemories": MessageLookupByLibrary.simpleMessage(
+            "Look back on your memories 🌄"),
+        "newPhotosEmoji": MessageLookupByLibrary.simpleMessage(" new 📸"),
+        "onThisDay": MessageLookupByLibrary.simpleMessage("On this day"),
+        "onThisDayNotificationExplanation": MessageLookupByLibrary.simpleMessage(
+            "Receive reminders about memories from this day in previous years."),
+        "receiveRemindersOnBirthdays": MessageLookupByLibrary.simpleMessage(
+            "Receive reminders when it\'s someone\'s birthday. Tapping on the notification will take you to photos of the birthday person."),
+        "sorryWeHadToPauseYourBackups": MessageLookupByLibrary.simpleMessage(
+            "Sorry, we had to pause your backups"),
         "verify": MessageLookupByLibrary.simpleMessage("Hitelesítés")
       };
 }
