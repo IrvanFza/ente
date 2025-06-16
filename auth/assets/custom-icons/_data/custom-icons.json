@@ -43,7 +43,13 @@
       "title": "Anycoin Direct",
       "slug": "anycoindirect"
     },
-     {
+    {
+      "title": "AR24",
+      "altNames": [
+        "Docaposte AR24"
+      ]
+    },
+    {
       "title": "Aruba",
       "slug": "aruba",
       "hex": "ef8a33"
@@ -133,6 +139,14 @@
       ]
     },
     {
+      "title": "Bitazza",
+      "slug": "bitazza"
+    },
+    {
+      "title": "Bitkub",
+      "slug": "bitkub"
+    },
+    {
       "title": "Bitfinex"
     },
     {
@@ -184,6 +198,13 @@
       "slug": "blue_sky"
     },
     {
+      "title": "bonify",
+      "slug": "bonify",
+      "altNames": [
+        "bonify.de"
+      ]
+    },
+    {
       "title": "Booking",
       "altNames": [
         "Booking.com"
@@ -207,6 +228,13 @@
     },
     {
       "title": "Bugzilla"
+    },
+    {
+      "title": "Bundesagentur für Arbeit",
+      "slug": "bundesagentur_fur_arbeit",
+      "altNames": [
+        "Agentur für Arbeit"
+      ]
     },
     {
       "title": "ButterflyMX",
@@ -279,11 +307,24 @@
       "title": "CSAM"
     },
     {
+      "title": "CSSBuy",
+      "slug": "cssbuy",
+      "altNames": [
+        "CSS Buy",
+        "CSS-Buy",
+        "cssbuy.com"
+      ]
+    },
+    {
       "title": "CSFloat"
     },
     {
       "title": "CSGORoll",
       "slug": "csgoroll"
+    },
+    {
+      "title": "Cryptee",
+      "slug": "cryptee"
     },
     {
       "title": "Cwallet",
@@ -386,6 +427,13 @@
       "hex": "858585"
     },
     {
+      "title": "Fanatical",
+      "slug": "fanatical",
+      "altNames": [
+        "FANATICAL"
+      ]
+    },
+    {
       "title": "Fastmail"
     },
     {
@@ -411,8 +459,14 @@
       "slug": "finanzfluss"
     },
     {
+      "title": "Finary"
+    },
+    {
       "title": "Firefox",
       "slug": "mozilla"
+    },
+    {
+      "title": "fortrabbit"
     },
     {
       "title": "ForUsAll"
@@ -422,11 +476,24 @@
       "slug": "freetaxusa"
     },
     {
+      "title": "FZJ",
+      "slug": "fzj",
+      "hex": "023d6b",
+      "altNames": [
+        "Forschungszentrum Jülich",
+        "FZJ IdP",
+        "iffLogin"
+      ]
+    },
+    {
       "title": "G2A"
     },
     {
       "title": "Gate.io",
       "slug": "gateio.svg"
+    },
+    {
+      "title": "GERID"
     },
     {
       "title": "GitHub"
@@ -508,11 +575,18 @@
       "slug": "id_me"
     },
     {
-      "title": "Infomaniak"
+      "title": "ImmoScout24",
+      "slug": "immo_scout_24",
+      "altNames": [
+        "ImmobilienScout24"
+      ]
     },
     {
       "title": "Impact.com",
       "slug": "impact"
+    },
+    {
+      "title": "Infomaniak"
     },
     {
       "title": "ING"
@@ -615,8 +689,7 @@
     },
     {
       "title": "LinkedIn",
-      "slug": "linkedin",
-      "hex": "2596be"
+      "slug": "linkedin"
     },
     {
       "title": "Linux.Do",
@@ -676,8 +749,8 @@
       ]
     },
     {
-      "title": "Mercado Livre",
-      "slug": "mercado_livre",
+      "title": "Mercado Libre",
+      "slug": "mercado_libre",
       "altNames": [
         "Mercado Libre",
         "MercadoLibre",
@@ -703,6 +776,7 @@
     {
       "title": "Mistral",
       "altNames": [
+        "Le Chat",
         "Mistral AI",
         "MistralAI"
       ]
@@ -847,10 +921,14 @@
         "欧易"
       ]
     },
-     {
+    {
       "title": "OnShape",
       "slug": "onshape",
       "hex": "7abb5e"
+    },
+    {
+      "title": "Oracle Cloud",
+      "slug": "oracle_cloud"
     },
     {
       "title": "Parqet",
@@ -953,6 +1031,14 @@
       ]
     },
     {
+      "title": "R10.net",
+      "slug": "r10",
+      "altNames": [
+        "R10",
+        "r10.net"
+      ]
+    },
+    {
       "title": "Raindrop.io",
       "slug": "raindrop_io",
       "altNames": [
@@ -971,7 +1057,7 @@
       "title": "RealMe",
       "slug": "realme"
     },
-     {
+    {
       "title": "RealVNC",
       "slug": "realvnc",
       "hex": "488aec"
@@ -1239,6 +1325,14 @@
       "slug": "us_mobile"
     },
     {
+      "title": "uollet",
+      "slug": "uollet",
+      "altNames": [
+        "UOLLET",
+        "uollet.com.br"
+      ]
+    },
+    {
       "title": "Vikunja"
     },
     {
@@ -1323,6 +1417,34 @@
     },
     {
       "title": "CoinSpot"
+    },
+    {
+      "title": "Aternos",
+      "slug": "aternos"
+    },
+    {
+      "title": "Toshl Finance",
+      "slug": "toshl_finance",
+      "altNames": [
+        "Toshl"
+      ]
+    },
+    {
+      "title": "Tebex",
+      "slug": "tebex",
+      "altNames": [
+        "tebex",
+        "tebex.io",
+        "buycraft"
+      ]
+    },
+    {
+      "title": "xAI",
+      "slug": "xai"
+    },
+    {
+      "title": "Cronometer",
+      "slug": "cronometer"
     }
   ]
 }

@@ -26,11 +26,12 @@ class MessageLookup extends MessageLookupByLibrary {
             MessageLookupByLibrary.simpleMessage("다시 오신 것을 환영합니다!"),
         "askDeleteReason":
             MessageLookupByLibrary.simpleMessage("계정을 삭제하는 가장 큰 이유가 무엇인가요?"),
+        "birthdays": MessageLookupByLibrary.simpleMessage("Birthdays"),
         "cancel": MessageLookupByLibrary.simpleMessage("닫기"),
+        "clickToInstallOurBestVersionYet": MessageLookupByLibrary.simpleMessage(
+            "Click to install our best version yet"),
         "confirmAccountDeletion":
             MessageLookupByLibrary.simpleMessage("계정 삭제 확인"),
-        "curatedMemories":
-            MessageLookupByLibrary.simpleMessage("Curated memories"),
         "deleteAccount": MessageLookupByLibrary.simpleMessage("계정 삭제"),
         "deleteAccountPermanentlyButton":
             MessageLookupByLibrary.simpleMessage("계정을 영구적으로 삭제"),
@@ -40,8 +41,20 @@ class MessageLookup extends MessageLookupByLibrary {
         "enterYourEmailAddress":
             MessageLookupByLibrary.simpleMessage("이메일을 입력하세요"),
         "feedback": MessageLookupByLibrary.simpleMessage("피드백"),
+        "happyBirthday":
+            MessageLookupByLibrary.simpleMessage("Happy birthday! 🥳"),
         "invalidEmailAddress":
             MessageLookupByLibrary.simpleMessage("잘못된 이메일 주소"),
+        "lookBackOnYourMemories": MessageLookupByLibrary.simpleMessage(
+            "Look back on your memories 🌄"),
+        "newPhotosEmoji": MessageLookupByLibrary.simpleMessage(" new 📸"),
+        "onThisDay": MessageLookupByLibrary.simpleMessage("On this day"),
+        "onThisDayNotificationExplanation": MessageLookupByLibrary.simpleMessage(
+            "Receive reminders about memories from this day in previous years."),
+        "receiveRemindersOnBirthdays": MessageLookupByLibrary.simpleMessage(
+            "Receive reminders when it\'s someone\'s birthday. Tapping on the notification will take you to photos of the birthday person."),
+        "sorryWeHadToPauseYourBackups": MessageLookupByLibrary.simpleMessage(
+            "Sorry, we had to pause your backups"),
         "verify": MessageLookupByLibrary.simpleMessage("인증"),
         "yourAccountHasBeenDeleted":
             MessageLookupByLibrary.simpleMessage("계정이 삭제되었습니다.")
