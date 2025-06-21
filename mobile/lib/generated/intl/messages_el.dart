@@ -20,11 +20,12 @@ typedef String MessageIfAbsent(String messageStr, List<dynamic> args);
 class MessageLookup extends MessageLookupByLibrary {
   String get localeName => 'el';
 
+  static String m115(name) => "Wish \$${name} a happy birthday! 🎉";
+
   final messages = _notInlinedMessages(_notInlinedMessages);
   static Map<String, Function> _notInlinedMessages(_) => <String, Function>{
-        "curatedMemories":
-            MessageLookupByLibrary.simpleMessage("Curated memories"),
         "enterYourEmailAddress": MessageLookupByLibrary.simpleMessage(
-            "Εισάγετε την διεύθυνση ηλ. ταχυδρομείου σας")
+            "Εισάγετε την διεύθυνση ηλ. ταχυδρομείου σας"),
+        "wishThemAHappyBirthday": m115
       };
 }

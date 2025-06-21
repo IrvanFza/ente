@@ -16,7 +16,6 @@ import "package:media_kit/media_kit.dart";
 import "package:package_info_plus/package_info_plus.dart";
 import 'package:path_provider/path_provider.dart';
 import 'package:photos/app.dart';
-import "package:photos/audio_session_handler.dart";
 import 'package:photos/core/configuration.dart';
 import 'package:photos/core/constants.dart';
 import 'package:photos/core/error-reporting/super_logging.dart';
@@ -32,19 +31,19 @@ import "package:photos/services/account/user_service.dart";
 import 'package:photos/services/app_lifecycle_service.dart';
 import 'package:photos/services/collections_service.dart';
 import 'package:photos/services/favorites_service.dart';
-import "package:photos/services/filedata/filedata_service.dart";
 import 'package:photos/services/home_widget_service.dart';
 import 'package:photos/services/local_file_update_service.dart';
 import "package:photos/services/machine_learning/face_ml/person/person_service.dart";
 import 'package:photos/services/machine_learning/ml_service.dart';
 import 'package:photos/services/machine_learning/semantic_search/semantic_search_service.dart';
 import "package:photos/services/notification_service.dart";
-import "package:photos/services/preview_video_store.dart";
 import 'package:photos/services/push_service.dart';
 import 'package:photos/services/search_service.dart';
 import 'package:photos/services/sync/local_sync_service.dart';
 import 'package:photos/services/sync/remote_sync_service.dart';
 import "package:photos/services/sync/sync_service.dart";
+import "package:photos/services/video_preview_service.dart";
+import "package:photos/services/wake_lock_service.dart";
 import 'package:photos/ui/tools/app_lock.dart';
 import 'package:photos/ui/tools/lock_screen.dart';
 import "package:photos/utils/email_util.dart";
@@ -67,10 +66,6 @@ const kFGTaskDeathTimeoutInMicroseconds = 5000000;
 void main() async {
   debugRepaintRainbowEnabled = false;
   WidgetsFlutterBinding.ensureInitialized();
-  //For audio to work on vidoes in iOS when in silent mode.
-  if (Platform.isIOS) {
-    unawaited(AudioSessionHandler.setAudioSessionCategory());
-  }
   MediaKit.ensureInitialized();
 
   final savedThemeMode = await AdaptiveTheme.getThemeMode();
@@ -227,8 +222,12 @@ Future<void> _init(bool isBackground, {String via = ''}) async {
     await NetworkClient.instance.init(packageInfo);
     _logger.info("NetworkClient init done $tlog");
 
-    ServiceLocator.instance
-        .init(preferences, NetworkClient.instance.enteDio, packageInfo);
+    ServiceLocator.instance.init(
+      preferences,
+      NetworkClient.instance.enteDio,
+      NetworkClient.instance.getDio(),
+      packageInfo,
+    );
 
     _logger.info("UserService init $tlog");
     await UserService.instance.init();
@@ -241,7 +240,6 @@ Future<void> _init(bool isBackground, {String via = ''}) async {
     FavoritesService.instance.initFav().ignore();
     LocalFileUpdateService.instance.init(preferences);
     SearchService.instance.init();
-    FileDataService.instance.init(preferences);
 
     _logger.info("FileUploader init $tlog");
     await FileUploader.instance.init(preferences, isBackground);
@@ -258,7 +256,7 @@ Future<void> _init(bool isBackground, {String via = ''}) async {
     await SyncService.instance.init(preferences);
     _logger.info("SyncService init done $tlog");
 
-    await HomeWidgetService.instance.init(preferences);
+    HomeWidgetService.instance.init(preferences);
 
     if (!isBackground) {
       await _scheduleFGHomeWidgetSync();
@@ -273,7 +271,7 @@ Future<void> _init(bool isBackground, {String via = ''}) async {
       });
     }
     _logger.info("PushService/HomeWidget done $tlog");
-    PreviewVideoStore.instance.init(preferences);
+    VideoPreviewService.instance.init(preferences);
     unawaited(SemanticSearchService.instance.init());
     unawaited(MLService.instance.init());
     await PersonService.init(
@@ -281,12 +279,31 @@ Future<void> _init(bool isBackground, {String via = ''}) async {
       MLDataDB.instance,
       preferences,
     );
+    EnteWakeLockService.instance.init(preferences);
+    logLocalSettings();
     initComplete = true;
     _logger.info("Initialization done $tlog");
   } catch (e, s) {
     _logger.severe("Error in init ", e, s);
     rethrow;
   }
+}
+
+void logLocalSettings() {
+  _logger.info("Show memories: ${memoriesCacheService.showAnyMemories}");
+  _logger
+      .info("Smart memories enabled: ${localSettings.isSmartMemoriesEnabled}");
+  _logger.info("Ml is enabled: ${flagService.hasGrantedMLConsent}");
+  _logger.info(
+    "ML local indexing is enabled: ${localSettings.isMLLocalIndexingEnabled}",
+  );
+  _logger.info(
+    "Multipart upload is enabled: ${localSettings.userEnabledMultiplePart}",
+  );
+  _logger.info("Gallery grid size: ${localSettings.getPhotoGridSize()}");
+  _logger.info(
+    "Video streaming is enalbed: ${VideoPreviewService.instance.isVideoStreamingEnabled}",
+  );
 }
 
 void _heartBeatOnInit(int i) {

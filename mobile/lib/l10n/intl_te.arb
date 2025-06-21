@@ -1,4 +1,4 @@
 {
   "@@locale ": "en",
-  "curatedMemories": "Curated memories"
+  "wishThemAHappyBirthday": "Wish ${name} a happy birthday! 🎉"
 }

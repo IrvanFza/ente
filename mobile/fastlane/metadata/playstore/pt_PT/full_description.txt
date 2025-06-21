@@ -1,30 +1,30 @@
-Ente é um aplicativo simples para fazer backup automático e organizar suas fotos e vídeos.
+Ente é uma aplicação simples feita para fazer backup automaticamente e organizar as suas fotos e vídeos.
 
-Se tem procurado uma alternativa que respeite a privacidade para preservar as suas memórias, veio ao sítio certo. Com o Ente, são armazenados encriptados de ponta a ponta (e2ee). Isto significa que só o utilizador as pode ver.
+Se busca por uma alternativa mais privada para preservar as suas memórias, chegaste ao lugar correto. Com Ente, eles são armazenados em encriptação de ponta a ponta (e2ee). Isto significa que só vos podeis vê-las.
 
-Temos aplicações para Android, iOS, Web e ambiente de trabalho, e as suas fotografias serão perfeitamente sincronizadas entre todos os seus dispositivos de uma forma encriptada de ponta a ponta (e2ee).
+Nós temos aplicações em Android, iOS, Sítio Web e Desktop, todas as suas fotos são sincronizadas sem parar entre os aparelhos numa forma de encriptação (e2ee).
 
-O Ente também simplifica a partilha dos seus álbuns com os seus entes queridos Pode partilhá-los diretamente com outros utilizadores do Ente, encriptados de ponta a ponta, ou com ligações publicamente visíveis.
+Ente também facilita a partilha de álbuns com entes queridos. É possível partilhá-los diretamente com outros utilizadores, em encriptação ponta-a-ponta; ou com ligações visíveis a público.
 
-Os seus dados encriptados são armazenados em vários locais, incluindo um abrigo de emergência em Paris. Levamos a posteridade a sério e facilitamos a tarefa de garantir que as suas memórias perdurem para além de si.
+Os seus dados encriptados são armazenados em várias localizações, incluindo um abrigo avançado em Paris. Levamos a nossa postura a sério e facilitamos para certificarmos que as suas memórias revivam-no.
 
-Estamos aqui para criar a aplicação de fotografias mais segura de sempre, junte-se à nossa viagem!
+Estamos aqui para fazer a aplicação mais segura do mundo, venha e adere a nossa jornada!
 
-✨ RECURSOS
--    Cópias de segurança de qualidade original, porque cada pixel é importante
--    Planos familiares, para que possa partilhar o armazenamento com a sua família
-- Pastas partilhadas, caso queira que o seu parceiro desfrute dos seus cliques na “Câmara”
--    Links para álbuns, que podem ser protegidas com uma palavra-passe e definidas para expirar
--    Capacidade de libertar espaço, removendo ficheiros dos quais foi feita uma cópia de segurança segura
--    Editor de imagens, para dar os retoques finais
--    Favoritar, ocultar e reviver suas memórias, pois elas são preciosas
--    Importação com um clique do Google, da Apple, do seu disco rígido e muito mais
--    Tema escuro, porque as suas fotografias ficam bem com ele
+✨ FUNCIONALIDADES
+-    Backups com qualidade original, por cada píxel valer a pena
+-    Planos em família, para poder partilhar armazenamento com familiares
+-    Pastas partilhadas, para que o seu parceiro desfrute de cliques na "Câmara"
+-    Links de álbuns, para poder ser protegido por uma palavra-passe e definido para expiração
+-    Possibilidade de liberar espaço, removendo ficheiros que já foram feitos backup
+-    Editor de imagens, para dar retoques finais
+-    Adicionar aos favoritos, obscurecer e reviver as suas memórias, para aqueles tão preciosos
+-    Importar num só clique do Google, Apple, e o seu disco rígido e mais
+-    Tema escuro, para as suas fotos encaixarem melhor
 -    2FA, 3FA, autenticação biométrica
--    and a LOT more!
+-    e MAIS além!
 
 💲 PREÇOS
-Não oferecemos planos gratuitos para sempre, porque é importante para nós mantermo-nos sustentáveis e resistirmos ao teste do tempo. Em vez disso, oferecemos planos acessíveis que pode partilhar livremente com a sua família. Pode encontrar mais informações em ente.io.
+Não garantimos planos gratuitos para sempre, já que é importante a nós mantermo-nos sustentáveis e conseguirmos superar o desafio do tempo. Ao invés, garantimos planos acessíveis para poder partilhar livremente com os seus familiares. Para mais informações, consulte "ente.io"
 
-🙋 SUPPORT
-Orgulhamo-nos de oferecer um apoio humano. Se for nosso cliente pago, pode contactar team@ente.io e esperar uma resposta da nossa equipa no prazo de 24 horas.
+🙋 SUPORTE
+Estamos orgulhosos ao oferecer suporte físico. Se for um cliente pago, pode contactar a nossa equipa através de "team@ente.io" e esperar uma resposta nossa dentro de um dia.
