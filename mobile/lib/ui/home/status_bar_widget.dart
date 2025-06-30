@@ -6,12 +6,9 @@ import "package:logging/logging.dart";
 import 'package:photos/core/event_bus.dart';
 import 'package:photos/ente_theme_data.dart';
 import 'package:photos/events/notification_event.dart';
-import "package:photos/events/preview_updated_event.dart";
 import 'package:photos/events/sync_status_update_event.dart';
 import "package:photos/generated/l10n.dart";
-import "package:photos/models/preview/preview_item_status.dart";
 import "package:photos/service_locator.dart";
-import "package:photos/services/preview_video_store.dart";
 import 'package:photos/services/sync/sync_service.dart';
 import "package:photos/theme/ente_theme.dart";
 import 'package:photos/theme/text_style.dart';
@@ -19,6 +16,7 @@ import 'package:photos/ui/account/verify_recovery_page.dart';
 import 'package:photos/ui/components/home_header_widget.dart';
 import 'package:photos/ui/components/notification_widget.dart';
 import 'package:photos/ui/home/header_error_widget.dart';
+import "package:photos/ui/settings/backup/backup_settings_screen.dart";
 import "package:photos/ui/settings/backup/backup_status_screen.dart";
 import "package:photos/ui/settings/ml/enable_ml_consent.dart";
 import 'package:photos/utils/navigation_util.dart';
@@ -34,15 +32,14 @@ class StatusBarWidget extends StatefulWidget {
 
 class _StatusBarWidgetState extends State<StatusBarWidget> {
   static final _logger = Logger("StatusBarWidget");
-  late int previewCount = 0;
 
   late StreamSubscription<SyncStatusUpdate> _subscription;
   late StreamSubscription<NotificationEvent> _notificationSubscription;
-  late StreamSubscription<PreviewUpdatedEvent> _previewSubscription;
-
+  bool _isPausedDueToNetwork = false;
   bool _showStatus = false;
   bool _showErrorBanner = false;
   bool _showMlBanner = !flagService.hasGrantedMLConsent &&
+      flagService.hasSyncedAccountFlags() &&
       !localSettings.hasSeenMLEnablingBanner;
   Error? _syncError;
 
@@ -50,6 +47,7 @@ class _StatusBarWidgetState extends State<StatusBarWidget> {
   void initState() {
     _subscription = Bus.instance.on<SyncStatusUpdate>().listen((event) {
       _logger.info("Received event " + event.status.toString());
+      _isPausedDueToNetwork = event.status == SyncStatus.paused;
       if (event.status == SyncStatus.error) {
         setState(() {
           _syncError = event.error;
@@ -85,25 +83,6 @@ class _StatusBarWidgetState extends State<StatusBarWidget> {
       }
     });
 
-    previewCount = PreviewVideoStore.instance.previews.values
-        .where(
-          (element) =>
-              element.status != PreviewItemStatus.uploaded &&
-              element.status != PreviewItemStatus.failed,
-        )
-        .length;
-
-    _previewSubscription =
-        Bus.instance.on<PreviewUpdatedEvent>().listen((event) {
-      previewCount = event.items.values
-          .where(
-            (element) =>
-                element.status != PreviewItemStatus.uploaded &&
-                element.status != PreviewItemStatus.failed,
-          )
-          .length;
-      setState(() {});
-    });
     super.initState();
   }
 
@@ -111,7 +90,6 @@ class _StatusBarWidgetState extends State<StatusBarWidget> {
   void dispose() {
     _subscription.cancel();
     _notificationSubscription.cancel();
-    _previewSubscription.cancel();
     super.dispose();
   }
 
@@ -125,26 +103,15 @@ class _StatusBarWidgetState extends State<StatusBarWidget> {
                   onTap: () {
                     routeToPage(
                       context,
-                      const BackupStatusScreen(),
+                      _isPausedDueToNetwork
+                          ? const BackupSettingsScreen()
+                          : const BackupStatusScreen(),
                       forceCustomPageRoute: true,
                     ).ignore();
                   },
                   child: const SyncStatusWidget(),
                 )
-              : previewCount > 0
-                  ? GestureDetector(
-                      onTap: () {
-                        routeToPage(
-                          context,
-                          const BackupStatusScreen(),
-                          forceCustomPageRoute: true,
-                        ).ignore();
-                      },
-                      child: RefreshIndicatorWidget(
-                        S.of(context).processingVideos,
-                      ),
-                    )
-                  : const Text("ente", style: brandStyleMedium),
+              : const Text("ente", style: brandStyleMedium),
         ),
         _showErrorBanner
             ? Divider(

@@ -1,7 +1,9 @@
 {
   "@@locale ": "en",
   "enterYourEmailAddress": "Увядзіце свой адрас электроннай пошты",
+  "enterYourNewEmailAddress": "Увядзіце ваш новы адрас электроннай пошты",
   "accountWelcomeBack": "З вяртаннем!",
+  "emailAlreadyRegistered": "Электронная пошта ўжо зарэгістравана.",
   "email": "Электронная пошта",
   "cancel": "Скасаваць",
   "verify": "Праверыць",
@@ -209,5 +211,5 @@
   "systemTheme": "Сістэма",
   "freeTrial": "Бясплатная пробная версія",
   "faqs": "Частыя пытанні",
-  "curatedMemories": "Curated memories"
+  "wishThemAHappyBirthday": "Wish ${name} a happy birthday! 🎉"
 }

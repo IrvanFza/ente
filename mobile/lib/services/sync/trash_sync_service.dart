@@ -7,6 +7,7 @@ import "package:ente_crypto/ente_crypto.dart";
 import 'package:logging/logging.dart';
 import 'package:photos/core/constants.dart';
 import 'package:photos/core/event_bus.dart';
+import "package:photos/db/files_db.dart";
 import 'package:photos/db/trash_db.dart';
 import 'package:photos/events/collection_updated_event.dart';
 import 'package:photos/events/force_reload_trash_page_event.dart';
@@ -17,6 +18,7 @@ import 'package:photos/models/file/file.dart';
 import 'package:photos/models/file/trash_file.dart';
 import 'package:photos/models/ignored_file.dart';
 import "package:photos/models/metadata/file_magic.dart";
+import "package:photos/services/collections_service.dart";
 import 'package:photos/services/ignored_files_service.dart';
 import "package:photos/utils/file_key.dart";
 import 'package:shared_preferences/shared_preferences.dart';
@@ -30,7 +32,7 @@ class TrashSyncService {
   final Dio _enteDio;
 
   TrashSyncService(this._prefs, this._enteDio) {
-    _logger.fine("TrashSyncService constructor");
+    _logger.info("TrashSyncService constructor");
   }
 
   void init(SharedPreferences preferences) {
@@ -40,20 +42,20 @@ class TrashSyncService {
   Future<void> syncTrash() async {
     final lastSyncTime = _getSyncTime();
     bool isLocalTrashUpdated = false;
-    _logger.fine('sync trash sinceTime : $lastSyncTime');
+    _logger.info('sync trash sinceTime : $lastSyncTime');
     final diff = await getTrashFilesDiff(lastSyncTime);
     if (diff.trashedFiles.isNotEmpty) {
       isLocalTrashUpdated = true;
-      _logger.fine("inserting ${diff.trashedFiles.length} items in trash");
+      _logger.info("inserting ${diff.trashedFiles.length} items in trash");
       await _trashDB.insertMultiple(diff.trashedFiles);
     }
     if (diff.deletedUploadIDs.isNotEmpty) {
-      _logger.fine("discard ${diff.deletedUploadIDs.length} deleted items");
+      _logger.info("discard ${diff.deletedUploadIDs.length} deleted items");
       final itemsDeleted = await _trashDB.delete(diff.deletedUploadIDs);
       isLocalTrashUpdated = isLocalTrashUpdated || itemsDeleted > 0;
     }
     if (diff.restoredFiles.isNotEmpty) {
-      _logger.fine("discard ${diff.restoredFiles.length} restored items");
+      _logger.info("discard ${diff.restoredFiles.length} restored items");
       final itemsDeleted = await _trashDB
           .delete(diff.restoredFiles.map((e) => e.uploadedFileID!).toList());
       isLocalTrashUpdated = isLocalTrashUpdated || itemsDeleted > 0;
@@ -92,7 +94,7 @@ class TrashSyncService {
       }
     }
     if (ignoredFiles.isNotEmpty) {
-      _logger.fine('updating ${ignoredFiles.length} ignored files ');
+      _logger.info('updating ${ignoredFiles.length} ignored files ');
       await IgnoredFilesService.instance.cacheAndInsert(ignoredFiles);
     }
   }
@@ -108,10 +110,34 @@ class TrashSyncService {
   Future<void> trashFilesOnServer(List<TrashRequest> trashRequestItems) async {
     final includedFileIDs = <int>{};
     final uniqueItems = <TrashRequest>[];
+    final ownedCollectionIDs =
+        CollectionsService.instance.getAllOwnedCollectionIDs();
     for (final item in trashRequestItems) {
       if (!includedFileIDs.contains(item.fileID)) {
-        uniqueItems.add(item);
-        includedFileIDs.add(item.fileID);
+        // Check if the collectionID in the request is owned by the user
+        if (ownedCollectionIDs.contains(item.collectionID)) {
+          uniqueItems.add(item);
+          includedFileIDs.add(item.fileID);
+        } else {
+          // If not owned, use a different owned collectionID
+          final fileCollectionIDs =
+              await FilesDB.instance.getAllCollectionIDsOfFile(item.fileID);
+          bool foundAnotherOwnedCollection = false;
+          for (final collectionID in fileCollectionIDs) {
+            if (ownedCollectionIDs.contains(collectionID)) {
+              final newItem = TrashRequest(item.fileID, collectionID);
+              uniqueItems.add(newItem);
+              includedFileIDs.add(item.fileID);
+              foundAnotherOwnedCollection = true;
+              break;
+            }
+          }
+          if (!foundAnotherOwnedCollection) {
+            _logger.severe(
+              "File ${item.fileID} is not owned by the user and has no other owned collection",
+            );
+          }
+        }
       }
     }
     final requestData = <String, dynamic>{};

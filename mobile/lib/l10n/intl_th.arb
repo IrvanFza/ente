@@ -288,5 +288,5 @@
   },
   "maps": "แผนที่",
   "enableMaps": "เปิดใช้งานแผนที่",
-  "curatedMemories": "Curated memories"
+  "wishThemAHappyBirthday": "Wish ${name} a happy birthday! 🎉"
 }

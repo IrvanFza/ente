@@ -1,7 +1,10 @@
 import "dart:convert";
+import "dart:io";
 import "dart:typed_data";
 
 import "package:ente_auth/core/configuration.dart";
+import "package:ente_auth/core/event_bus.dart";
+import "package:ente_auth/events/signed_out_event.dart";
 import "package:ente_auth/utils/platform_util.dart";
 import "package:ente_crypto_dart/ente_crypto_dart.dart";
 import "package:flutter/material.dart";
@@ -25,6 +28,7 @@ class LockScreenSettings {
   static const keyHasMigratedLockScreenChanges =
       "ls_has_migrated_lock_screen_changes";
   static const keyShowOfflineModeWarning = "ls_show_offline_mode_warning";
+  static const keyShouldShowLockScreen = "should_show_lock_screen";
   static const String kIsLightMode = "is_light_mode";
 
   final List<Duration> autoLockDurations = const [
@@ -49,6 +53,12 @@ class LockScreenSettings {
     /// Function to Check if the migration for lock screen changes has
     /// already been done by checking a stored boolean value.
     await runLockScreenChangesMigration();
+
+    await _clearLsDataInKeychainIfFreshInstall();
+
+    Bus.instance.on<SignedOutEvent>().listen((event) {
+      removePinAndPassword();
+    });
   }
 
   Future<void> setOfflineModeWarningStatus(bool value) async {
@@ -66,8 +76,7 @@ class LockScreenSettings {
 
     final bool passwordEnabled = await isPasswordSet();
     final bool pinEnabled = await isPinSet();
-    final bool systemLockEnabled =
-        Configuration.instance.shouldShowSystemLockScreen();
+    final bool systemLockEnabled = shouldShowSystemLockScreen();
 
     if (passwordEnabled || pinEnabled || systemLockEnabled) {
       await setAppLockEnabled(true);
@@ -209,5 +218,36 @@ class LockScreenSettings {
 
   Future<bool> isPasswordSet() async {
     return await _secureStorage.containsKey(key: password);
+  }
+
+  Future<bool> shouldShowLockScreen() async {
+    final bool isPin = await isPinSet();
+    final bool isPass = await isPasswordSet();
+    return isPin || isPass || shouldShowSystemLockScreen();
+  }
+
+  bool shouldShowSystemLockScreen() {
+    if (_preferences.containsKey(keyShouldShowLockScreen)) {
+      return _preferences.getBool(keyShouldShowLockScreen)!;
+    } else {
+      return false;
+    }
+  }
+
+  Future<void> setSystemLockScreen(bool value) {
+    return _preferences.setBool(keyShouldShowLockScreen, value);
+  }
+
+  // If the app was uninstalled (without logging out if it was used with
+  // backups), keychain items of the app persist in the keychain. To avoid using
+  // old keychain items, we delete them on reinstall.
+  Future<void> _clearLsDataInKeychainIfFreshInstall() async {
+    if ((Platform.isIOS || Platform.isMacOS) &&
+        !Configuration.instance.isLoggedIn() &&
+        !Configuration.instance.hasOptedForOfflineMode()) {
+      await _secureStorage.delete(key: password);
+      await _secureStorage.delete(key: pin);
+      await _secureStorage.delete(key: saltKey);
+    }
   }
 }

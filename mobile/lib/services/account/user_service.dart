@@ -693,19 +693,19 @@ class UserService {
     ProgressDialog dialog,
   ) async {
     late Uint8List keyEncryptionKey;
-    _logger.finest('Start deriving key');
+    _logger.info('Start deriving key');
     keyEncryptionKey = await CryptoUtil.deriveKey(
       utf8.encode(userPassword),
       CryptoUtil.base642bin(srpAttributes.kekSalt),
       srpAttributes.memLimit,
       srpAttributes.opsLimit,
     );
-    _logger.finest('keyDerivation done, derive LoginKey');
+    _logger.info('keyDerivation done, derive LoginKey');
     final loginKey = await CryptoUtil.deriveLoginKey(keyEncryptionKey);
     final Uint8List identity = Uint8List.fromList(
       utf8.encode(srpAttributes.srpUserID),
     );
-    _logger.finest('loginKey derivation done');
+    _logger.info('loginKey derivation done');
     final Uint8List salt = base64Decode(srpAttributes.srpSalt);
     final Uint8List password = loginKey;
     final SecureRandom random = _getSecureRandom();
@@ -1442,6 +1442,21 @@ class UserService {
     }
 
     emailIDs.remove(ownerEmail);
+
+    return emailIDs;
+  }
+
+  Set<String> getEmailIDsOfFamilyMember() {
+    final emailIDs = <String>{};
+
+    final cachedUserDetails = getCachedUserDetails();
+    if (cachedUserDetails?.familyData?.members?.isNotEmpty ?? false) {
+      for (final member in cachedUserDetails!.familyData!.members!) {
+        if (member.email.isNotEmpty) {
+          emailIDs.add(member.email);
+        }
+      }
+    }
 
     return emailIDs;
   }

@@ -13,6 +13,7 @@ import 'package:photos/models/gallery_type.dart';
 import "package:photos/models/ml/face/person.dart";
 import 'package:photos/models/selected_files.dart';
 import "package:photos/services/machine_learning/face_ml/feedback/cluster_feedback.dart";
+import "package:photos/services/machine_learning/ml_result.dart";
 import "package:photos/ui/notification/toast.dart";
 import 'package:photos/ui/viewer/actions/file_selection_overlay_bar.dart';
 import 'package:photos/ui/viewer/gallery/gallery.dart';
@@ -22,7 +23,7 @@ import "package:photos/ui/viewer/people/add_person_action_sheet.dart";
 import "package:photos/ui/viewer/people/cluster_app_bar.dart";
 import "package:photos/ui/viewer/people/people_banner.dart";
 import "package:photos/ui/viewer/people/people_page.dart";
-import "package:photos/ui/viewer/search/result/person_face_widget.dart";
+import "package:photos/ui/viewer/people/person_face_widget.dart";
 import "package:photos/ui/viewer/search/result/search_result_page.dart";
 import "package:photos/utils/navigation_util.dart";
 
@@ -66,8 +67,7 @@ class _ClusterPageState extends State<ClusterPage> {
     files = widget.searchResult;
     _filesUpdatedEvent =
         Bus.instance.on<LocalPhotosUpdatedEvent>().listen((event) {
-      if (event.type == EventType.deletedFromDevice ||
-          event.type == EventType.deletedFromEverywhere ||
+      if (event.type == EventType.deletedFromEverywhere ||
           event.type == EventType.deletedFromRemote ||
           event.type == EventType.hide) {
         for (var updatedFile in event.updatedFiles) {
@@ -77,12 +77,20 @@ class _ClusterPageState extends State<ClusterPage> {
       }
     });
     _peopleChangedEvent = Bus.instance.on<PeopleChangedEvent>().listen((event) {
-      if (event.type == PeopleEventType.removedFilesFromCluster &&
-          (event.source == widget.clusterID.toString())) {
-        for (var updatedFile in event.relevantFiles!) {
-          files.remove(updatedFile);
+      if (event.source == widget.clusterID.toString()) {
+        if (event.type == PeopleEventType.removedFilesFromCluster) {
+          for (var updatedFile in event.relevantFiles!) {
+            files.remove(updatedFile);
+          }
+          setState(() {});
         }
-        setState(() {});
+        if (event.type == PeopleEventType.removedFaceFromCluster) {
+          for (final String removedFaceID in event.relevantFaceIDs!) {
+            final int fileID = getFileIdFromFaceId<int>(removedFaceID);
+            files.removeWhere((file) => file.uploadedFileID == fileID);
+          }
+          setState(() {});
+        }
       }
     });
     kDebugMode
@@ -133,11 +141,10 @@ class _ClusterPageState extends State<ClusterPage> {
       selectedFiles: _selectedFiles,
       enableFileGrouping: widget.enableGrouping,
       initialFiles: widget.searchResult,
-      header: widget.showNamingBanner
+      header: widget.showNamingBanner && files.isNotEmpty
           ? PeopleBanner(
               type: PeopleBannerType.addName,
               faceWidget: PersonFaceWidget(
-                files.first,
                 clusterID: widget.clusterID,
               ),
               actionIcon: Icons.add_outlined,

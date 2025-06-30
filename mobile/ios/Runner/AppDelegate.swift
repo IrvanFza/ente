@@ -2,6 +2,7 @@ import AVFoundation
 import Flutter
 import UIKit
 import app_links
+import workmanager
 
 @main
 @objc class AppDelegate: FlutterAppDelegate {
@@ -14,21 +15,15 @@ import app_links
       UNUserNotificationCenter.current().delegate = self as UNUserNotificationCenterDelegate
     }
 
-    let controller: FlutterViewController = window?.rootViewController as! FlutterViewController
-    let audioSessionChannel = FlutterMethodChannel(
-      name: "io.ente.frame/audio_session",
-      binaryMessenger: controller.binaryMessenger)
-
-    audioSessionChannel.setMethodCallHandler({
-      (call: FlutterMethodCall, result: @escaping FlutterResult) -> Void in
-      if call.method == "setAudioSessionCategory" {
-        self.setAudioSessionCategory(result: result)
-      } else {
-        result(FlutterMethodNotImplemented)
-      }
-    })
-
     GeneratedPluginRegistrant.register(with: self)
+    WorkmanagerPlugin.setPluginRegistrantCallback { registry in
+      GeneratedPluginRegistrant.register(with: registry)
+    }
+    var freqInMinutes = 30 * 60
+    // Register a periodic task in iOS 13+
+    WorkmanagerPlugin.registerPeriodicTask(
+      withIdentifier: "io.ente.frame.iOSBackgroundAppRefresh",
+      frequency: NSNumber(value: freqInMinutes))
 
     // Retrieve the link from parameters
     if let url = AppLinks.shared.getLink(launchOptions: launchOptions) {
@@ -38,21 +33,6 @@ import app_links
     }
 
     return super.application(application, didFinishLaunchingWithOptions: launchOptions)
-  }
-
-  private func setAudioSessionCategory(result: @escaping FlutterResult) {
-    do {
-      try AVAudioSession.sharedInstance().setCategory(
-        .playback, mode: .default, options: [.mixWithOthers, .defaultToSpeaker])
-      try AVAudioSession.sharedInstance().setActive(true)
-      result(nil)
-    } catch {
-      result(
-        FlutterError(
-          code: "AUDIO_SESSION_ERROR",
-          message: "Failed to set audio session category",
-          details: error.localizedDescription))
-    }
   }
 
   override func applicationDidBecomeActive(_ application: UIApplication) {
