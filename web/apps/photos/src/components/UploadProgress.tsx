@@ -18,27 +18,39 @@ import {
     Snackbar,
     Stack,
     styled,
+    Tooltip,
     Typography,
     type AccordionProps,
     type DialogProps,
 } from "@mui/material";
-import ItemList from "components/ItemList";
+import { SpacedRow } from "ente-base/components/containers";
 import { FilledIconButton } from "ente-base/components/mui";
 import { useBaseContext } from "ente-base/context";
-import {
-    type UploadPhase,
-    type UploadResult,
-} from "ente-gallery/services/upload";
-import { SpaceBetweenFlex } from "ente-shared/components/Container";
+import { formattedListJoin } from "ente-base/i18n";
+import { type UploadPhase } from "ente-gallery/services/upload";
 import { t } from "i18next";
-import React, { createContext, useContext, useEffect, useState } from "react";
+import memoize from "memoize-one";
+import React, {
+    createContext,
+    useContext,
+    useEffect,
+    useState,
+    type ReactElement,
+} from "react";
 import { Trans } from "react-i18next";
+import {
+    areEqual,
+    FixedSizeList as List,
+    type ListChildComponentProps,
+    type ListItemKeySelector,
+} from "react-window";
 import type {
+    FinishedUploadType,
     InProgressUpload,
     SegregatedFinishedUploads,
     UploadCounter,
     UploadFileNames,
-} from "services/upload/uploadManager";
+} from "services/upload-manager";
 
 interface UploadProgressProps {
     open: boolean;
@@ -149,36 +161,50 @@ const UploadProgressContext = createContext<UploadProgressContextT>({
 });
 
 const MinimizedUploadProgress: React.FC = () => (
-    <Snackbar
-        open
-        anchorOrigin={{ horizontal: "right", vertical: "bottom" }}
-        sx={(theme) => ({ boxShadow: theme.vars.palette.boxShadow.menu })}
-    >
+    <Snackbar open anchorOrigin={{ horizontal: "right", vertical: "bottom" }}>
         <Paper sx={{ width: "min(360px, 100svw)" }}>
             <UploadProgressHeader />
         </Paper>
     </Snackbar>
 );
 
-function UploadProgressHeader() {
-    return (
-        <>
-            <UploadProgressTitle />
-            <UploadProgressBar />
-        </>
-    );
-}
+const UploadProgressHeader: React.FC = () => (
+    <>
+        <UploadProgressTitle />
+        <UploadProgressBar />
+    </>
+);
 
-const UploadProgressTitleText = ({ expanded }) => {
+const UploadProgressTitle: React.FC = () => {
+    const { setExpanded, onClose, expanded } = useContext(
+        UploadProgressContext,
+    );
+    const toggleExpanded = () => setExpanded((expanded) => !expanded);
+
     return (
-        <Typography variant={expanded ? "h2" : "h3"}>
-            {t("FILE_UPLOAD")}
-        </Typography>
+        <DialogTitle>
+            <SpacedRow>
+                <Box>
+                    <Typography variant="h3">{t("file_upload")}</Typography>
+                    <UploadProgressSubtitleText />
+                </Box>
+                <Stack direction="row" sx={{ gap: 1 }}>
+                    <FilledIconButton onClick={toggleExpanded}>
+                        {expanded ? <UnfoldLessIcon /> : <UnfoldMoreIcon />}
+                    </FilledIconButton>
+                    <FilledIconButton onClick={onClose}>
+                        <CloseIcon />
+                    </FilledIconButton>
+                </Stack>
+            </SpacedRow>
+        </DialogTitle>
     );
 };
 
-function UploadProgressSubtitleText() {
-    const { uploadPhase, uploadCounter } = useContext(UploadProgressContext);
+const UploadProgressSubtitleText: React.FC = () => {
+    const { uploadPhase, uploadCounter, finishedUploads } = useContext(
+        UploadProgressContext,
+    );
 
     return (
         <Typography
@@ -189,59 +215,73 @@ function UploadProgressSubtitleText() {
                 marginTop: "4px",
             }}
         >
-            {subtitleText(uploadPhase, uploadCounter)}
+            {subtitleText(uploadPhase, uploadCounter, finishedUploads)}
         </Typography>
     );
-}
+};
 
 const subtitleText = (
     uploadPhase: UploadPhase,
     uploadCounter: UploadCounter,
+    finishedUploads: SegregatedFinishedUploads | null | undefined,
 ) => {
     switch (uploadPhase) {
         case "preparing":
-            return t("UPLOAD_STAGE_MESSAGE.0");
+            return t("preparing");
         case "readingMetadata":
-            return t("UPLOAD_STAGE_MESSAGE.1");
+            return t("upload_reading_metadata_files");
         case "uploading":
-            return t("UPLOAD_STAGE_MESSAGE.3", { uploadCounter });
+            return t("processed_counts", {
+                count: uploadCounter.finished,
+                total: uploadCounter.total,
+            });
         case "cancelling":
-            return t("UPLOAD_STAGE_MESSAGE.4");
-        case "done":
-            return t("UPLOAD_STAGE_MESSAGE.5");
+            return t("upload_cancelling");
+        case "done": {
+            const count = uploadedFileCount(finishedUploads);
+            const notCount = notUploadedFileCount(finishedUploads);
+            const items: string[] = [];
+            if (count) items.push(t("upload_done", { count }));
+            if (notCount) items.push(t("upload_skipped", { count: notCount }));
+            if (!items.length) {
+                return t("upload_done", { count });
+            } else {
+                return formattedListJoin(items);
+            }
+        }
     }
 };
 
-const UploadProgressTitle: React.FC = () => {
-    const { setExpanded, onClose, expanded } = useContext(
-        UploadProgressContext,
-    );
-    const toggleExpanded = () => setExpanded((expanded) => !expanded);
+const uploadedFileCount = (
+    finishedUploads: SegregatedFinishedUploads | null | undefined,
+) => {
+    if (!finishedUploads) return 0;
 
-    return (
-        <DialogTitle>
-            <SpaceBetweenFlex>
-                <Box>
-                    <UploadProgressTitleText expanded={expanded} />
-                    <UploadProgressSubtitleText />
-                </Box>
-                <Box>
-                    <Stack direction="row" sx={{ gap: 1 }}>
-                        <FilledIconButton onClick={toggleExpanded}>
-                            {expanded ? <UnfoldLessIcon /> : <UnfoldMoreIcon />}
-                        </FilledIconButton>
-                        <FilledIconButton onClick={onClose}>
-                            <CloseIcon />
-                        </FilledIconButton>
-                    </Stack>
-                </Box>
-            </SpaceBetweenFlex>
-        </DialogTitle>
-    );
+    let c = 0;
+    c += finishedUploads.get("uploaded")?.length ?? 0;
+    c += finishedUploads.get("uploadedWithStaticThumbnail")?.length ?? 0;
+
+    return c;
+};
+
+const notUploadedFileCount = (
+    finishedUploads: SegregatedFinishedUploads | null | undefined,
+) => {
+    if (!finishedUploads) return 0;
+
+    let c = 0;
+    c += finishedUploads.get("alreadyUploaded")?.length ?? 0;
+    c += finishedUploads.get("blocked")?.length ?? 0;
+    c += finishedUploads.get("failed")?.length ?? 0;
+    c += finishedUploads.get("largerThanAvailableStorage")?.length ?? 0;
+    c += finishedUploads.get("tooLarge")?.length ?? 0;
+    c += finishedUploads.get("unsupported")?.length ?? 0;
+    return c;
 };
 
 const UploadProgressBar: React.FC = () => {
     const { uploadPhase, percentComplete } = useContext(UploadProgressContext);
+
     return (
         <Box>
             {(uploadPhase == "readingMetadata" ||
@@ -267,18 +307,7 @@ function UploadProgressDialog() {
     const [hasUnUploadedFiles, setHasUnUploadedFiles] = useState(false);
 
     useEffect(() => {
-        if (
-            finishedUploads.get("alreadyUploaded")?.length > 0 ||
-            finishedUploads.get("blocked")?.length > 0 ||
-            finishedUploads.get("failed")?.length > 0 ||
-            finishedUploads.get("largerThanAvailableStorage")?.length > 0 ||
-            finishedUploads.get("tooLarge")?.length > 0 ||
-            finishedUploads.get("unsupported")?.length > 0
-        ) {
-            setHasUnUploadedFiles(true);
-        } else {
-            setHasUnUploadedFiles(false);
-        }
+        setHasUnUploadedFiles(notUploadedFileCount(finishedUploads) > 0);
     }, [finishedUploads]);
 
     const handleClose: DialogProps["onClose"] = (_, reason) => {
@@ -292,27 +321,27 @@ function UploadProgressDialog() {
                 <DialogContent sx={{ "&&&": { px: 0 } }}>
                     {uploadPhase == "uploading" && <InProgressSection />}
                     <ResultSection
-                        uploadResult="uploaded"
-                        sectionTitle={t("SUCCESSFUL_UPLOADS")}
+                        resultType="uploaded"
+                        sectionTitle={t("successful_uploads")}
                     />
                     <ResultSection
-                        uploadResult="uploadedWithStaticThumbnail"
-                        sectionTitle={t("THUMBNAIL_GENERATION_FAILED_UPLOADS")}
-                        sectionInfo={t("THUMBNAIL_GENERATION_FAILED_INFO")}
+                        resultType="uploadedWithStaticThumbnail"
+                        sectionTitle={t("thumbnail_generation_failed")}
+                        sectionInfo={t("thumbnail_generation_failed_hint")}
                     />
                     {uploadPhase == "done" && hasUnUploadedFiles && (
                         <NotUploadSectionHeader>
-                            {t("FILE_NOT_UPLOADED_LIST")}
+                            {t("file_not_uploaded_list")}
                         </NotUploadSectionHeader>
                     )}
                     <ResultSection
-                        uploadResult="blocked"
-                        sectionTitle={t("BLOCKED_UPLOADS")}
-                        sectionInfo={<Trans i18nKey={"ETAGS_BLOCKED"} />}
+                        resultType="blocked"
+                        sectionTitle={t("blocked_uploads")}
+                        sectionInfo={<Trans i18nKey={"blocked_uploads_hint"} />}
                     />
                     <ResultSection
-                        uploadResult="failed"
-                        sectionTitle={t("FAILED_UPLOADS")}
+                        resultType="failed"
+                        sectionTitle={t("failed_uploads")}
                         sectionInfo={
                             uploadPhase == "done"
                                 ? undefined
@@ -320,26 +349,24 @@ function UploadProgressDialog() {
                         }
                     />
                     <ResultSection
-                        uploadResult="alreadyUploaded"
-                        sectionTitle={t("SKIPPED_FILES")}
-                        sectionInfo={t("SKIPPED_INFO")}
+                        resultType="alreadyUploaded"
+                        sectionTitle={t("ignored_uploads")}
+                        sectionInfo={t("ignored_uploads_hint")}
                     />
                     <ResultSection
-                        uploadResult="largerThanAvailableStorage"
-                        sectionTitle={t(
-                            "LARGER_THAN_AVAILABLE_STORAGE_UPLOADS",
-                        )}
-                        sectionInfo={t("LARGER_THAN_AVAILABLE_STORAGE_INFO")}
+                        resultType="largerThanAvailableStorage"
+                        sectionTitle={t("insufficient_storage")}
+                        sectionInfo={t("insufficient_storage_hint")}
                     />
                     <ResultSection
-                        uploadResult="unsupported"
-                        sectionTitle={t("UNSUPPORTED_FILES")}
-                        sectionInfo={t("UNSUPPORTED_INFO")}
+                        resultType="unsupported"
+                        sectionTitle={t("unsupported_files")}
+                        sectionInfo={t("unsupported_files_hint")}
                     />
                     <ResultSection
-                        uploadResult="tooLarge"
-                        sectionTitle={t("TOO_LARGE_UPLOADS")}
-                        sectionInfo={t("TOO_LARGE_INFO")}
+                        resultType="tooLarge"
+                        sectionTitle={t("large_files")}
+                        sectionInfo={t("large_files_hint")}
                     />
                 </DialogContent>
             )}
@@ -380,13 +407,13 @@ const InProgressSection: React.FC = () => {
         <SectionAccordion>
             <SectionAccordionSummary expandIcon={<ExpandMoreIcon />}>
                 <TitleText
-                    title={t("INPROGRESS_UPLOADS")}
+                    title={t("uploads_in_progress")}
                     count={inProgressUploads?.length}
                 />
             </SectionAccordionSummary>
             <SectionAccordionDetails>
                 {hasLivePhotos && (
-                    <SectionInfo>{t("LIVE_PHOTOS_DETECTED")}</SectionInfo>
+                    <SectionInfo>{t("live_photos_detected")}</SectionInfo>
                 )}
                 <ItemList
                     items={fileList}
@@ -455,20 +482,20 @@ const NotUploadSectionHeader = styled("div")(
 );
 
 interface ResultSectionProps {
-    uploadResult: UploadResult;
+    resultType: FinishedUploadType;
     sectionTitle: string;
     sectionInfo?: React.ReactNode;
 }
 
 const ResultSection: React.FC<ResultSectionProps> = ({
-    uploadResult,
+    resultType,
     sectionTitle,
     sectionInfo,
 }) => {
     const { finishedUploads, uploadFileNames } = useContext(
         UploadProgressContext,
     );
-    const fileList = finishedUploads.get(uploadResult);
+    const fileList = finishedUploads.get(resultType);
 
     if (!fileList?.length) {
         return <></>;
@@ -542,6 +569,93 @@ const TitleText: React.FC<TitleTextProps> = ({ title, count }) => (
     </Stack>
 );
 
+interface ItemListProps<T> {
+    items: T[];
+    generateItemKey: (item: T) => string | number;
+    getItemTitle: (item: T) => string;
+    renderListItem: (item: T) => React.JSX.Element;
+    maxHeight?: number;
+    itemSize?: number;
+}
+
+interface ItemData<T> {
+    renderListItem: (item: T) => React.JSX.Element;
+    getItemTitle: (item: T) => string;
+    items: T[];
+}
+
+const createItemData: <T>(
+    renderListItem: (item: T) => React.JSX.Element,
+    getItemTitle: (item: T) => string,
+    items: T[],
+) => ItemData<T> = memoize((renderListItem, getItemTitle, items) => ({
+    renderListItem,
+    getItemTitle,
+    items,
+}));
+
+// @ts-expect-error "TODO: Understand and fix the type error here"
+const Row: <T>({
+    index,
+    style,
+    data,
+}: ListChildComponentProps<ItemData<T>>) => ReactElement = React.memo(
+    ({ index, style, data }) => {
+        const { renderListItem, items, getItemTitle } = data;
+        return (
+            <Tooltip
+                slotProps={{
+                    // Reduce the vertical offset of the tooltip "popper" from
+                    // the element on which the tooltip appears.
+                    popper: {
+                        modifiers: [
+                            { name: "offset", options: { offset: [0, -14] } },
+                        ],
+                    },
+                }}
+                title={getItemTitle(items[index])}
+                placement="bottom-start"
+                enterDelay={300}
+                enterNextDelay={100}
+            >
+                <div style={style}>{renderListItem(items[index])}</div>
+            </Tooltip>
+        );
+    },
+    areEqual,
+);
+
+function ItemList<T>(props: ItemListProps<T>) {
+    const itemData = createItemData(
+        props.renderListItem,
+        props.getItemTitle,
+        props.items,
+    );
+
+    const getItemKey: ListItemKeySelector<ItemData<T>> = (index, data) => {
+        const { items } = data;
+        return props.generateItemKey(items[index]);
+    };
+
+    return (
+        <Box sx={{ pl: 2 }}>
+            <List
+                itemData={itemData}
+                height={Math.min(
+                    props.itemSize * props.items.length,
+                    props.maxHeight,
+                )}
+                width={"100%"}
+                itemSize={props.itemSize}
+                itemCount={props.items.length}
+                itemKey={getItemKey}
+            >
+                {Row}
+            </List>
+        </Box>
+    );
+}
+
 const DoneFooter: React.FC = () => {
     const { uploadPhase, finishedUploads, retryFailed, onClose } = useContext(
         UploadProgressContext,
@@ -553,7 +667,7 @@ const DoneFooter: React.FC = () => {
                 (finishedUploads?.get("failed")?.length > 0 ||
                 finishedUploads?.get("blocked")?.length > 0 ? (
                     <Button fullWidth onClick={retryFailed}>
-                        {t("RETRY_FAILED")}
+                        {t("retry_failed_uploads")}
                     </Button>
                 ) : (
                     <Button fullWidth onClick={onClose}>

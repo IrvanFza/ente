@@ -1,14 +1,19 @@
+// TODO: Audit this file
+/* eslint-disable @typescript-eslint/restrict-plus-operands */
 import AlbumOutlinedIcon from "@mui/icons-material/AlbumOutlined";
 import FavoriteRoundedIcon from "@mui/icons-material/FavoriteRounded";
 import PlayCircleOutlineOutlinedIcon from "@mui/icons-material/PlayCircleOutlineOutlined";
 import { Box, Checkbox, Link, Typography, styled } from "@mui/material";
 import Avatar from "components/pages/gallery/Avatar";
+import type { LocalUser } from "ente-accounts/services/user";
 import { assertionFailed } from "ente-base/assert";
 import { Overlay } from "ente-base/components/containers";
 import { isSameDay } from "ente-base/date";
 import { formattedDateRelative } from "ente-base/i18n-date";
+import log from "ente-base/log";
 import { downloadManager } from "ente-gallery/services/download";
-import { EnteFile, enteFileDeletionDate } from "ente-media/file";
+import type { EnteFile } from "ente-media/file";
+import { fileCreationTime, fileDurationString } from "ente-media/file-metadata";
 import { FileType } from "ente-media/file-type";
 import {
     GAP_BTW_TILES,
@@ -22,19 +27,17 @@ import {
     StaticThumbnail,
 } from "ente-new/photos/components/PlaceholderThumbnails";
 import { TileBottomTextOverlay } from "ente-new/photos/components/Tiles";
-import { TRASH_SECTION } from "ente-new/photos/services/collection";
-import { FlexWrapper } from "ente-shared/components/Container";
+import { PseudoCollectionID } from "ente-new/photos/services/collection-summary";
 import { t } from "i18next";
 import memoize from "memoize-one";
-import { GalleryContext } from "pages/gallery";
 import React, { useContext, useEffect, useMemo, useRef, useState } from "react";
 import { Trans } from "react-i18next";
 import {
     VariableSizeList as List,
-    ListChildComponentProps,
+    type ListChildComponentProps,
     areEqual,
 } from "react-window";
-import { SelectedState } from "types/gallery";
+import type { SelectedState } from "types/gallery";
 import { shouldShowAvatar } from "utils/file";
 import {
     handleSelectCreator,
@@ -90,6 +93,19 @@ export interface FileListAnnotatedFile {
     timelineDateString: string;
 }
 
+/**
+ * A file augmented with the date when it will be permanently deleted.
+ *
+ * See: [Note: Files in trash pseudo collection have deleteBy]
+ */
+export type EnteTrashFile = EnteFile & {
+    /**
+     * Timestamp (epoch microseconds) when the trash item (and its corresponding
+     * {@link EnteFile}) will be permanently deleted.
+     */
+    deleteBy?: number;
+};
+
 export interface FileListProps {
     /** The height we should occupy (needed since the list is virtualized). */
     height: number;
@@ -107,7 +123,19 @@ export interface FileListProps {
      * another mode in which the gallery operates.
      */
     modePlus?: GalleryBarMode | "search";
+    /**
+     * The logged in user, if any.
+     *
+     * This is only expected to be present when the listing is shown within the
+     * photos app, where we have a logged in user. The public albums app can
+     * omit this prop.
+     */
+    user?: LocalUser;
     showAppDownloadBanner?: boolean;
+    /**
+     * If `true`, then the current listing is showing magic search results.
+     */
+    isMagicSearchResult?: boolean;
     selectable?: boolean;
     setSelected: (
         selected: SelectedState | ((selected: SelectedState) => SelectedState),
@@ -123,6 +151,23 @@ export interface FileListProps {
      * Not set in the context of the shared albums app.
      */
     favoriteFileIDs?: Set<number>;
+    /**
+     * A map from known Ente user IDs to their emails.
+     *
+     * This is only expected in the context of the photos app, and will be
+     * omitted when running in the public albums app.
+     */
+    emailByUserID?: Map<number, string>;
+    /**
+     * An optional {@link TimeStampListItem} shown before all the items in the
+     * list. It is not sticky, and scrolls along with the content of the list.
+     */
+    header?: TimeStampListItem;
+    /**
+     * An optional {@link TimeStampListItem} shown after all the items in the
+     * list. It is not sticky, and scrolls along with the content of the list.
+     */
+    footer?: TimeStampListItem;
     /**
      * Called when the user activates the thumbnail at the given {@link index}.
      *
@@ -140,17 +185,21 @@ export const FileList: React.FC<FileListProps> = ({
     width,
     mode,
     modePlus,
+    header,
+    user,
     annotatedFiles,
     showAppDownloadBanner,
+    isMagicSearchResult,
     selectable,
     selected,
     setSelected,
     activeCollectionID,
     activePersonID,
     favoriteFileIDs,
+    emailByUserID,
+    footer,
     onItemClick,
 }) => {
-    const galleryContext = useContext(GalleryContext);
     const publicCollectionGalleryContext = useContext(
         PublicCollectionGalleryContext,
     );
@@ -195,10 +244,8 @@ export const FileList: React.FC<FileListProps> = ({
             refreshInProgress.current = true;
             let timeStampList: TimeStampListItem[] = [];
 
-            if (galleryContext.photoListHeader) {
-                timeStampList.push(
-                    getPhotoListHeader(galleryContext.photoListHeader),
-                );
+            if (header) {
+                timeStampList.push(asFullSpanListItem(header));
             } else if (publicCollectionGalleryContext.photoListHeader) {
                 timeStampList.push(
                     getPhotoListHeader(
@@ -206,7 +253,7 @@ export const FileList: React.FC<FileListProps> = ({
                     ),
                 );
             }
-            if (galleryContext.isClipSearchResult) {
+            if (isMagicSearchResult) {
                 noGrouping(timeStampList);
             } else {
                 groupByTime(timeStampList);
@@ -219,7 +266,9 @@ export const FileList: React.FC<FileListProps> = ({
                 timeStampList.push(getEmptyListItem());
             }
             timeStampList.push(getVacuumItem(timeStampList));
-            if (publicCollectionGalleryContext.credentials) {
+            if (footer) {
+                timeStampList.push(asFullSpanListItem(footer));
+            } else if (publicCollectionGalleryContext.credentials) {
                 if (publicCollectionGalleryContext.photoListFooter) {
                     timeStampList.push(
                         getPhotoListFooter(
@@ -244,69 +293,9 @@ export const FileList: React.FC<FileListProps> = ({
         width,
         height,
         annotatedFiles,
-        galleryContext.photoListHeader,
+        header,
         publicCollectionGalleryContext.photoListHeader,
-        galleryContext.isClipSearchResult,
-    ]);
-
-    useEffect(() => {
-        setTimeStampList((timeStampList) => {
-            timeStampList = timeStampList ?? [];
-            const hasHeader = timeStampList[0]?.tag == "header";
-            if (hasHeader) {
-                return timeStampList;
-            }
-            if (galleryContext.photoListHeader) {
-                return [
-                    getPhotoListHeader(galleryContext.photoListHeader),
-                    ...timeStampList,
-                ];
-            } else if (publicCollectionGalleryContext.photoListHeader) {
-                return [
-                    getPhotoListHeader(
-                        publicCollectionGalleryContext.photoListHeader,
-                    ),
-                    ...timeStampList,
-                ];
-            } else {
-                return timeStampList;
-            }
-        });
-    }, [
-        galleryContext.photoListHeader,
-        publicCollectionGalleryContext.photoListHeader,
-    ]);
-
-    useEffect(() => {
-        setTimeStampList((timeStampList) => {
-            timeStampList = timeStampList ?? [];
-            const hasFooter =
-                timeStampList.length > 0 &&
-                timeStampList[timeStampList.length - 1]?.tag ==
-                    "publicAlbumsFooter";
-            if (hasFooter) {
-                return timeStampList;
-            }
-            if (publicCollectionGalleryContext.credentials) {
-                if (publicCollectionGalleryContext.photoListFooter) {
-                    return [
-                        ...timeStampList,
-                        getPhotoListFooter(
-                            publicCollectionGalleryContext.photoListFooter,
-                        ),
-                        getAlbumsFooter(),
-                    ];
-                }
-            } else if (showAppDownloadBanner) {
-                return [...timeStampList, getAppDownloadFooter()];
-            } else {
-                return timeStampList;
-            }
-        });
-    }, [
-        publicCollectionGalleryContext.credentials,
-        showAppDownloadBanner,
-        publicCollectionGalleryContext.photoListFooter,
+        isMagicSearchResult,
     ]);
 
     useEffect(() => {
@@ -315,21 +304,19 @@ export const FileList: React.FC<FileListProps> = ({
 
     const groupByTime = (timeStampList: TimeStampListItem[]) => {
         let listItemIndex = 0;
-        let currentDate;
+        let lastCreationTime: number | undefined;
         annotatedFiles.forEach((item, index) => {
+            const creationTime = fileCreationTime(item.file) / 1000;
             if (
-                !currentDate ||
-                !isSameDay(
-                    new Date(item.file.metadata.creationTime / 1000),
-                    new Date(currentDate),
-                )
+                !lastCreationTime ||
+                !isSameDay(new Date(creationTime), new Date(lastCreationTime))
             ) {
-                currentDate = item.file.metadata.creationTime / 1000;
+                lastCreationTime = creationTime;
 
                 timeStampList.push({
                     tag: "date",
                     date: item.timelineDateString,
-                    id: currentDate.toString(),
+                    id: lastCreationTime.toString(),
                 });
                 timeStampList.push({
                     tag: "file",
@@ -622,10 +609,10 @@ export const FileList: React.FC<FileListProps> = ({
 
     useEffect(() => {
         // Nothing to do here if nothing is selected.
-        if (!galleryContext.selectedFile) return;
+        if (!selected) return;
 
         const notSelectedFiles = (annotatedFiles ?? []).filter(
-            (item) => !galleryContext.selectedFile[item.file.id],
+            (item) => !selected[item.file.id],
         );
 
         const unselectedDates = new Set(
@@ -651,12 +638,12 @@ export const FileList: React.FC<FileListProps> = ({
             localSelectedDates.forEach((date) => checked.add(date));
             return checked;
         });
-    }, [galleryContext.selectedFile]);
+    }, [selected]);
 
     const handleSelectMulti = handleSelectCreatorMulti(
-        galleryContext.setSelectedFiles,
+        setSelected,
         mode,
-        galleryContext?.user?.id,
+        user?.id,
         activeCollectionID,
         activePersonID,
     );
@@ -685,18 +672,12 @@ export const FileList: React.FC<FileListProps> = ({
             handleSelectCreator(
                 setSelected,
                 mode,
-                galleryContext.user?.id,
+                user?.id,
                 activeCollectionID,
                 activePersonID,
                 setRangeStart,
             ),
-        [
-            setSelected,
-            mode,
-            galleryContext.user?.id,
-            activeCollectionID,
-            activePersonID,
-        ],
+        [setSelected, mode, user?.id, activeCollectionID, activePersonID],
     );
 
     const onHoverOver = (index: number) => () => {
@@ -761,6 +742,7 @@ export const FileList: React.FC<FileListProps> = ({
     ) => (
         <FileThumbnail
             key={`tile-${file.id}-selected-${selected[file.id] ?? false}`}
+            {...{ user, emailByUserID }}
             file={file}
             onClick={() => onItemClick(index)}
             selectable={selectable}
@@ -772,7 +754,7 @@ export const FileList: React.FC<FileListProps> = ({
                       (selected.context.mode == "people"
                           ? selected.context.personID == activePersonID
                           : selected.context.collectionID ==
-                            activeCollectionID)) && selected[file.id]
+                            activeCollectionID)) && !!selected[file.id]
             }
             selectOnClick={selected.count > 0}
             onHover={onHoverOver(index)}
@@ -792,9 +774,7 @@ export const FileList: React.FC<FileListProps> = ({
         listItem: TimeStampListItem,
         isScrolling: boolean,
     ) => {
-        // Enhancement: This logic doesn't work on the shared album screen, the
-        // galleryContext.selectedFile is always null there.
-        const haveSelection = (galleryContext.selectedFile?.count ?? 0) > 0;
+        const haveSelection = (selected.count ?? 0) > 0;
         switch (listItem.tag) {
             case "date":
                 return listItem.dates ? (
@@ -979,9 +959,22 @@ const ListContainer = styled(Box, {
     }
 `;
 
-const ListItemContainer = styled(FlexWrapper)<{ span: number }>`
+const ListItemContainer = styled("div")<{ span: number }>`
     grid-column: span ${(props) => props.span};
+    display: flex;
+    align-items: center;
 `;
+
+const FullSpanListItemContainer = styled("div")`
+    grid-column: 1 / -1;
+    display: flex;
+    align-items: center;
+`;
+
+const asFullSpanListItem = ({ item, ...rest }: TimeStampListItem) => ({
+    ...rest,
+    item: <FullSpanListItemContainer>{item}</FullSpanListItemContainer>,
+});
 
 const DateContainer = styled(ListItemContainer)(
     ({ theme }) => `
@@ -1080,7 +1073,7 @@ const PhotoListRow = React.memo(
     areEqual,
 );
 
-interface FileThumbnailProps {
+type FileThumbnailProps = {
     file: EnteFile;
     onClick: () => void;
     selectable: boolean;
@@ -1094,10 +1087,11 @@ interface FileThumbnailProps {
     activeCollectionID: number;
     showPlaceholder: boolean;
     isFav: boolean;
-}
+} & Pick<FileListProps, "user" | "emailByUserID">;
 
 const FileThumbnail: React.FC<FileThumbnailProps> = ({
     file,
+    user,
     onClick,
     selectable,
     selected,
@@ -1108,11 +1102,10 @@ const FileThumbnail: React.FC<FileThumbnailProps> = ({
     isRangeSelectActive,
     isInsSelectRange,
     isFav,
+    emailByUserID,
     activeCollectionID,
     showPlaceholder,
 }) => {
-    const galleryContext = useContext(GalleryContext);
-
     const [imageURL, setImageURL] = useState<string | undefined>(undefined);
     const [isLongPressing, setIsLongPressing] = useState(false);
 
@@ -1141,7 +1134,10 @@ const FileThumbnail: React.FC<FileThumbnailProps> = ({
 
         void downloadManager
             .renderableThumbnailURL(file, showPlaceholder)
-            .then((url) => !didCancel && setImageURL(url));
+            .then((url) => !didCancel && setImageURL(url))
+            .catch((e: unknown) => {
+                log.warn("Failed to fetch thumbnail", e);
+            });
 
         return () => {
             didCancel = true;
@@ -1174,13 +1170,18 @@ const FileThumbnail: React.FC<FileThumbnailProps> = ({
         }
     };
 
+    // See: [Note: Files in trash pseudo collection have deleteBy]
+    const deleteBy =
+        activeCollectionID == PseudoCollectionID.trash &&
+        (file as EnteTrashFile).deleteBy;
+
     return (
         <FileThumbnail_
             key={`thumb-${file.id}}`}
             onClick={handleClick}
             onMouseEnter={handleHover}
             disabled={!imageURL}
-            {...(selectable ? longPressHandlers : {})}
+            {...(selectable && longPressHandlers)}
         >
             {selectable && (
                 <Check
@@ -1198,21 +1199,19 @@ const FileThumbnail: React.FC<FileThumbnailProps> = ({
             ) : (
                 <LoadingThumbnail />
             )}
-            {file.metadata.fileType === FileType.livePhoto ? (
+            {file.metadata.fileType == FileType.livePhoto ? (
                 <FileTypeIndicatorOverlay>
-                    <AlbumOutlinedIcon />
+                    <AlbumOutlinedIcon fontSize="small" />
                 </FileTypeIndicatorOverlay>
             ) : (
-                file.metadata.fileType === FileType.video && (
-                    <FileTypeIndicatorOverlay>
-                        <PlayCircleOutlineOutlinedIcon />
-                    </FileTypeIndicatorOverlay>
+                file.metadata.fileType == FileType.video && (
+                    <VideoDurationOverlay duration={fileDurationString(file)} />
                 )
             )}
             {selected && <SelectedOverlay />}
-            {shouldShowAvatar(file, galleryContext.user) && (
+            {shouldShowAvatar(file, user) && (
                 <AvatarOverlay>
-                    <Avatar file={file} />
+                    <Avatar {...{ user, file, emailByUserID }} />
                 </AvatarOverlay>
             )}
             {isFav && (
@@ -1229,10 +1228,10 @@ const FileThumbnail: React.FC<FileThumbnailProps> = ({
                 <InSelectRangeOverlay />
             )}
 
-            {activeCollectionID === TRASH_SECTION && file.isTrashed && (
+            {deleteBy && (
                 <TileBottomTextOverlay>
                     <Typography variant="small">
-                        {formattedDateRelative(enteFileDeletionDate(file))}
+                        {formattedDateRelative(deleteBy)}
                     </Typography>
                 </TileBottomTextOverlay>
             )}
@@ -1399,4 +1398,20 @@ const SelectedOverlay = styled(Overlay)(
     border: 2px solid ${theme.vars.palette.accent.main};
     border-radius: 4px;
 `,
+);
+
+interface VideoDurationOverlayProps {
+    duration: string | undefined;
+}
+
+const VideoDurationOverlay: React.FC<VideoDurationOverlayProps> = ({
+    duration,
+}) => (
+    <FileTypeIndicatorOverlay>
+        {duration ? (
+            <Typography variant="mini">{duration}</Typography>
+        ) : (
+            <PlayCircleOutlineOutlinedIcon fontSize="small" />
+        )}
+    </FileTypeIndicatorOverlay>
 );

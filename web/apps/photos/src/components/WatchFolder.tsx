@@ -152,7 +152,7 @@ export const WatchFolder: React.FC<ModalVisibilityProps> = ({
 
 interface WatchList {
     watches: FolderWatch[] | undefined;
-    removeWatch: (watch: FolderWatch) => void;
+    removeWatch: (watch: FolderWatch) => Promise<void>;
 }
 
 const WatchList: React.FC<WatchList> = ({ watches, removeWatch }) =>
@@ -177,18 +177,18 @@ const NoWatches: React.FC = () => (
             <Typography variant="small" sx={{ py: 1, color: "text.muted" }}>
                 {t("watch_folders_hint_1")}
             </Typography>
-            <Typography variant="small" sx={{ color: "text.muted" }}>
-                <Stack direction="row" sx={{ gap: 1 }}>
-                    <Check />
+            <Stack direction="row" sx={{ gap: 1 }}>
+                <Check />
+                <Typography variant="small" sx={{ color: "text.muted" }}>
                     {t("watch_folders_hint_2")}
-                </Stack>
-            </Typography>
-            <Typography variant="small" sx={{ color: "text.muted" }}>
-                <Stack direction="row" sx={{ gap: 1 }}>
-                    <Check />
+                </Typography>
+            </Stack>
+            <Stack direction="row" sx={{ gap: 1 }}>
+                <Check />
+                <Typography variant="small" sx={{ color: "text.muted" }}>
                     {t("watch_folders_hint_3")}
-                </Stack>
-            </Typography>
+                </Typography>
+            </Stack>
         </Stack>
     </CenteredFill>
 );
@@ -201,13 +201,13 @@ const Check: React.FC = () => (
 
 interface WatchEntryProps {
     watch: FolderWatch;
-    removeWatch: (watch: FolderWatch) => void;
+    removeWatch: (watch: FolderWatch) => Promise<void>;
 }
 
 const WatchEntry: React.FC<WatchEntryProps> = ({ watch, removeWatch }) => {
     const { showMiniDialog } = useBaseContext();
 
-    const confirmStopWatching = () => {
+    const confirmStopWatching = () =>
         showMiniDialog({
             title: t("stop_watching_folder_title"),
             message: t("stop_watching_folder_message"),
@@ -217,7 +217,6 @@ const WatchEntry: React.FC<WatchEntryProps> = ({ watch, removeWatch }) => {
                 action: () => removeWatch(watch),
             },
         });
-    };
 
     return (
         <SpacedRow sx={{ overflow: "hidden", flexShrink: 0 }}>
@@ -245,21 +244,22 @@ interface EntryHeadingProps {
     watch: FolderWatch;
 }
 
-const EntryHeading: React.FC<EntryHeadingProps> = ({ watch }) => {
-    const folderPath = watch.folderPath;
-
-    return (
-        <Stack
-            direction="row"
-            sx={{ gap: 1, alignItems: "center", justifyContent: "flex-start" }}
-        >
-            <Typography sx={{ flex: 1 }}>{basename(folderPath)}</Typography>
-            {watcher.isSyncingFolder(folderPath) && (
-                <CircularProgress size={15} sx={{ color: "stroke.muted" }} />
-            )}
-        </Stack>
-    );
-};
+const EntryHeading: React.FC<EntryHeadingProps> = ({
+    watch: { folderPath },
+}) => (
+    <Stack
+        direction="row"
+        sx={{ gap: 1.5, alignItems: "center", justifyContent: "flex-start" }}
+    >
+        <Typography>{basename(folderPath)}</Typography>
+        {watcher.isSyncingFolder(folderPath) && (
+            <CircularProgress
+                size={15}
+                sx={{ flexShrink: 0, color: "stroke.muted" }}
+            />
+        )}
+    </Stack>
+);
 
 const FolderPath: React.FC<React.PropsWithChildren> = ({ children }) => (
     <EllipsizedTypography variant="small" color="text.muted">
